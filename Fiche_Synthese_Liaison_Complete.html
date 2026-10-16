@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="M. DIAKHO - Lycée Professionnel | Académie de Versailles">
+    <title>Fiche Synthèse : Les Solutions Constructives d'Assemblage – La Liaison Complète | Bac Pro MELEC</title>
+    <style>
+        /* =========================================================================
+           STYLE GLOBAL FICHE SYNTHÈSE A4 RECTO-VERSO (2 PAGES STRICTES)
+           Thème Bleu Industriel & Électromécanique (#1e3a8a / #2563eb / #0284c7)
+           ========================================================================= */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #525659;
+            color: #1e293b;
+            line-height: 1.35;
+        }
+
+        /* Barre d'action fixe en haut */
+        .actions-bar {
+            position: sticky;
+            top: 10px;
+            z-index: 1000;
+            max-width: 210mm;
+            margin: 0 auto 15px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1e293b;
+            padding: 10px 18px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            color: white;
+        }
+
+        .actions-bar .btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .actions-bar .btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .actions-bar .btn-secondary {
+            background: #475569;
+        }
+
+        .actions-bar .btn-secondary:hover {
+            background: #334155;
+        }
+
+        /* Format A4 Certifié */
+        .a4-page {
+            width: 210mm;
+            max-width: 210mm;
+            height: 297mm;
+            min-height: 297mm;
+            max-height: 297mm;
+            margin: 0 auto 20px auto;
+            padding: 7mm 11mm;
+            background: white;
+            box-shadow: 0 0 12px rgba(0,0,0,0.4);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        /* En-tête compact officiel */
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 6px;
+        }
+
+        .header-table td {
+            border: 1.5px solid #1e3a8a;
+            padding: 4px 8px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .header-title {
+            background-color: #eef3fc;
+            font-size: 13.5px;
+            font-weight: 800;
+            color: #1e3a8a;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            line-height: 1.25;
+        }
+
+        .header-sub {
+            font-size: 10.5px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        /* Boîtes thématiques */
+        .card-box {
+            border: 1.5px solid #4472c4;
+            border-radius: 5px;
+            padding: 6px 9px;
+            margin-bottom: 5px;
+            background: #ffffff;
+        }
+
+        .card-box h3 {
+            margin: 0 0 4px 0;
+            color: #1e3a8a;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-bottom: 1.5px solid #d9e2ec;
+            padding-bottom: 2px;
+        }
+
+        .card-box p, .card-box li {
+            font-size: 9.8px;
+            margin: 2px 0;
+            color: #334155;
+        }
+
+        /* Formule / Définition clé */
+        .formula-box {
+            background: linear-gradient(135deg, #eef3fc, #dbeafe);
+            border: 1.5px dashed #2563eb;
+            border-radius: 5px;
+            padding: 5px 8px;
+            text-align: center;
+            margin: 3px 0;
+            font-size: 10.5px;
+            font-weight: bold;
+            color: #1e3a8a;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 5px;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 5px;
+        }
+
+        .mini-card {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 4px 6px;
+        }
+
+        .mini-card h4 {
+            margin: 0 0 2px 0;
+            font-size: 10.2px;
+            color: #1e3a8a;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .mini-card p {
+            margin: 0;
+            font-size: 9.2px;
+            color: #475569;
+            line-height: 1.35;
+        }
+
+        /* Tableaux techniques */
+        .tech-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9.3px;
+            margin: 2px 0;
+        }
+
+        .tech-table th, .tech-table td {
+            border: 1px solid #cbd5e1;
+            padding: 2.5px 5px;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        .tech-table th {
+            background: #eef3fc;
+            color: #1e3a8a;
+            font-weight: 700;
+        }
+
+        .alert-box {
+            background: #fffbeb;
+            border-left: 3.5px solid #f59e0b;
+            padding: 4px 7px;
+            border-radius: 0 4px 4px 0;
+            font-size: 9.2px;
+            color: #92400e;
+            margin: 3px 0;
+            line-height: 1.35;
+        }
+
+        .alert-info {
+            background: #eff6ff;
+            border-left: 3.5px solid #2563eb;
+            color: #1e40af;
+        }
+
+        .page-footer {
+            margin-top: auto;
+            padding-top: 2px;
+            border-top: 1px solid #cbd5e1;
+            display: flex;
+            justify-content: space-between;
+            font-size: 8.5px;
+            color: #64748b;
+        }
+
+        .badge-tag {
+            display: inline-block;
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-size: 8.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .badge-demontable { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+        .badge-indemontable { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+        .badge-obstacle { background: #e0e7ff; color: #3730a3; border: 1px solid #a5b4fc; }
+        .badge-adherence { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+
+        /* Impression certifiée A4 Recto-Verso */
+        @media print {
+            body {
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .actions-bar, #lock-overlay {
+                display: none !important;
+            }
+
+            .a4-page {
+                box-shadow: none !important;
+                margin: 0 !important;
+                width: 210mm !important;
+                height: 297mm !important;
+                page-break-after: always !important;
+                break-after: page !important;
+                padding: 7mm 11mm !important;
+            }
+
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+        }
+
+        /* Overlay de Verrouillage (Code Enseignant Requis) */
+        #lock-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.96);
+            backdrop-filter: blur(10px);
+            z-index: 999999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .lock-card {
+            background: #1e293b;
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 460px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .lock-card h2 {
+            margin: 0 0 10px 0;
+            color: #60a5fa;
+            font-size: 20px;
+        }
+
+        .lock-card p {
+            font-size: 13px;
+            color: #cbd5e1;
+            margin: 0 0 20px 0;
+            line-height: 1.5;
+        }
+
+        .lock-card input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 6px;
+            border: 2px solid #475569;
+            background: #0f172a;
+            color: white;
+            font-size: 16px;
+            text-align: center;
+            letter-spacing: 2px;
+            margin-bottom: 14px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .lock-card input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+
+        .lock-card button {
+            width: 100%;
+            padding: 10px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .lock-card button:hover {
+            background: #1d4ed8;
+        }
+
+        .lock-error {
+            color: #f87171;
+            font-size: 12px;
+            margin-top: 10px;
+            display: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Overlay de Verrouillage (Code Enseignant Requis) -->
+    <div id="lock-overlay">
+        <div class="lock-card">
+            <div style="font-size: 44px; margin-bottom: 10px;">🔒</div>
+            <h2>Fiche Synthèse Verrouillée</h2>
+            <p>Cette fiche de synthèse est réservée aux élèves ayant validé leur travail sur le TD numérique.<br><br>Veuillez appeler votre professeur pour déverrouiller l'accès.</p>
+            <input type="password" id="code-enseignant-input" placeholder="Code secret enseignant" onkeydown="if(event.key==='Enter') validerCodeDirect()">
+            <button type="button" onclick="validerCodeDirect()">Déverrouiller la Fiche Synthèse</button>
+            <div id="code-error-msg" class="lock-error">Code enseignant incorrect !</div>
+        </div>
+    </div>
+
+    <!-- CONTENU OFFICIEL DE LA FICHE SYNTHÈSE (MASQUÉ TANT QUE NON DÉVERROUILLÉ) -->
+    <div id="synthese-content" style="display: none;">
+
+        <!-- Barre d'actions supérieure -->
+        <div class="actions-bar">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-weight: 800; font-size: 14px; color: #60a5fa;">FICHE SYNTHÈSE OFFICIELLE</span>
+                <span style="font-size: 12px; color: #94a3b8;">La Liaison Complète & Solutions Constructives</span>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <a href="TD2_Liaison_complète.html" class="btn btn-secondary">⬅️ Retour au TD</a>
+                <button onclick="window.print()" class="btn">🖨️ Imprimer / Enregistrer en PDF (2 pages A4)</button>
+            </div>
+        </div>
+
+        <!-- =========================================================================
+             PAGE 1 / 2 : DÉFINITIONS FONDAMENTALES & CATALOGUE DES COMPOSANTS
+             ========================================================================= -->
+        <div class="a4-page">
+            <div>
+                <!-- En-tête officiel -->
+                <table class="header-table">
+                    <tr>
+                        <td style="width: 25%; font-weight: bold; font-size: 10.5px; background: #f8fafc;">
+                            Lycée Professionnel<br>
+                            <span style="color: #1e3a8a; font-size: 10px;">Académie de Versailles</span><br>
+                            <span style="color: #047857; font-weight: 800; font-size: 9.5px;">BAC PRO MELEC</span>
+                        </td>
+                        <td style="width: 50%;" class="header-title">
+                            Fiche Synthèse : Liaison Complète<br>
+                            <span class="header-sub">Les Solutions Constructives d'Assemblage Mécanique</span>
+                        </td>
+                        <td style="width: 25%; font-size: 10.5px; background: #f8fafc;">
+                            <strong>M. DIAKHO</strong><br>
+                            <span style="font-size: 9.5px; color: #475569;">Construction Mécanique</span>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- 1. Définition et Caractérisation Fondamentale -->
+                <div class="card-box">
+                    <h3>1. Définition & Caractérisation d'une Liaison Complète (Encastrement)</h3>
+                    <p style="margin-bottom: 4px;">
+                        Une <strong>liaison complète (ou encastrement)</strong> supprime la totalité des <strong>6 degrés de liberté</strong> relatifs entre deux pièces (3 translations $T_x=T_y=T_z=0$ et 3 rotations $R_x=R_y=R_z=0$). Aucun mouvement relatif n'est possible.
+                    </p>
+                    <div class="grid-2">
+                        <div class="mini-card" style="border-left: 3px solid #16a34a;">
+                            <h4>Possibilité de démontage :</h4>
+                            <p>• <span class="badge-tag badge-demontable">Démontable</span> : Le démontage est possible <strong>sans aucune détérioration</strong> des pièces assemblées ni des organes d'assemblage (ex : vis, écrou, goupille, circlip, clavette).</p>
+                            <p>• <span class="badge-tag badge-indemontable">Indémontable (Permanente)</span> : Le désassemblage <strong>nécessite la détérioration ou la destruction</strong> d'une ou plusieurs pièces (ex : soudage, rivetage pop, collage, frettage).</p>
+                        </div>
+                        <div class="mini-card" style="border-left: 3px solid #2563eb;">
+                            <h4>Origine de l'effort de maintien :</h4>
+                            <p>• <span class="badge-tag badge-obstacle">Par Obstacle</span> : L'immobilité est assurée par le <strong>contact de surfaces ou butées géométriques</strong> s'opposant directement au déplacement (ex : corps de vis, clavette, circlip, goupille).</p>
+                            <p>• <span class="badge-tag badge-adherence">Par Adhérence</span> : L'immobilité repose sur le <strong>phénomène de frottement</strong> engendré par une pression de contact (ex : vis de pression, pincement, emmanchement conique).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Les Éléments Filetés d'Assemblage -->
+                <div class="card-box">
+                    <h3>2. Les Éléments Filetés (Vis, Écrous & Systèmes de Serrage)</h3>
+                    <div class="grid-3">
+                        <div class="mini-card">
+                            <h4>Vis d'assemblage</h4>
+                            <p>Traverse une pièce libre de passage (trou lisse) et vient s'implanter dans le trou taraudé de la seconde pièce.</p>
+                        </div>
+                        <div class="mini-card">
+                            <h4>Boulon (Vis + Écrou)</h4>
+                            <p>Ensemble composé d'une vis traversant deux pièces à trous lisses et serré par un écrou d'extrémité.</p>
+                        </div>
+                        <div class="mini-card">
+                            <h4>Vis de pression (sans tête)</h4>
+                            <p>Immobilise par <strong>adhérence</strong> en appuyant son extrémité (téton, pointeau, cuvette) directement sur la pièce.</p>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 5px;">
+                        <table class="tech-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 25%;">Organe Fileté</th>
+                                    <th style="width: 45%;">Caractéristiques Mécaniques & Fonction</th>
+                                    <th style="width: 30%;">Application Type MELEC</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Vis TH</strong> (Tête Hexagonale)</td>
+                                    <td>Serrage puissant à la clé plate/à pipe/dynamométrique. Tête apparente.</td>
+                                    <td>Fixation de moteurs, platines et châssis lourds.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Vis CHC</strong> (Cylindrique 6 pans creux)</td>
+                                    <td>Empreinte hexagonale femelle (clé Allen / BTR). Encastrable dans lamage.</td>
+                                    <td>Flasques moteurs, réducteurs, espace restreint.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Écrou Hexagonal (H)</strong></td>
+                                    <td>Élément taraudé standard assurant la mise en précharge du boulon.</td>
+                                    <td>Liaison par tige filetée, boulonnerie générale.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Écrou à oreilles (papillon)</strong></td>
+                                    <td>Muni de deux ailettes permettant un serrage et desserrage <strong>manuel sans outil</strong>.</td>
+                                    <td>Bornes de terre temporaires, trappes d'accès filtre.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Écrou à créneaux + goupille</strong></td>
+                                    <td>Créneaux traversés par une goupille fendue. <strong>Sécurité absolue anti-desserrage</strong>.</td>
+                                    <td>Moyeu de roue, guidage d'axes tournants critiques.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Contre-écrou</strong></td>
+                                    <td>Deuxième écrou serré contre le premier pour bloquer les filets par friction mutuelle.</td>
+                                    <td>Tiges filetées de suspension de chemin de câble.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 3. Les Rondelles d'Appui et de Freinage -->
+                <div class="card-box">
+                    <h3>3. Les Rondelles : Fonctions Mécaniques & Électriques</h3>
+                    <p style="margin-bottom: 4px;">
+                        Les rondelles s'intercalent sous la tête de vis ou sous l'écrou. Elles répondent à trois objectifs majeurs :
+                    </p>
+                    <div class="grid-3">
+                        <div class="mini-card" style="border-top: 2.5px solid #0284c7;">
+                            <h4>Rondelle plate d'appui</h4>
+                            <p><strong>Fonction :</strong> Augmente la surface d'appui, protège la surface des pièces tendres (alu, tôle) des rayures et répartit la pression de contact.</p>
+                        </div>
+                        <div class="mini-card" style="border-top: 2.5px solid #f59e0b;">
+                            <h4>Rondelle élastique (Grower / Belleville)</h4>
+                            <p><strong>Fonction :</strong> Maintient une <strong>tension axiale continue</strong> (effet ressort) pour compenser les tassements, vibrations et dilatations thermiques.</p>
+                        </div>
+                        <div class="mini-card" style="border-top: 2.5px solid #10b981;">
+                            <h4>Rondelle à dents (éventail / contact)</h4>
+                            <p><strong>Fonction :</strong> Freinage anti-desserrage par incrustation. <span style="color: #047857; font-weight: bold;">En MELEC : transperce la peinture pour assurer la continuité de masse (terre).</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Les Goupilles Mécaniques -->
+                <div class="card-box" style="margin-bottom: 0;">
+                    <h3>4. Les Goupilles de Positionnement, de Liaison & de Sécurité</h3>
+                    <div class="grid-3">
+                        <div class="mini-card">
+                            <h4>Goupille élastique</h4>
+                            <p>Tube fendu en acier à ressort dont le diamètre libre est supérieur au perçage. Montée <strong>serrée par adhérence</strong> à l'aide d'un <strong>maillet</strong> ou marteau + chasse-goupille. Très résistante au cisaillement.</p>
+                        </div>
+                        <div class="mini-card">
+                            <h4>Goupille cylindrique / conique</h4>
+                            <p>Pion d'acier rectifié assurant un positionnement précis (centrage) entre deux pièces avant serrage définitif.</p>
+                        </div>
+                        <div class="mini-card">
+                            <h4>Goupille épingle (bêta) / fendue</h4>
+                            <p>Fil métallique formé qui s'insère dans un trou percé en bout d'axe pour créer un <strong>arrêt axial amovible</strong> ou freiner un écrou à créneaux.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bas de page 1 -->
+            <div class="page-footer">
+                <span>BAC PRO MELEC | Construction Mécanique — Académie de Versailles</span>
+                <span>Fiche Synthèse : La Liaison Complète (Encastrement)</span>
+                <span>Page 1 / 2 (Recto)</span>
+            </div>
+        </div>
+
+        <!-- =========================================================================
+             PAGE 2 / 2 : TRANSMISSION ARBRE-MOYEU, SOLUTIONS PERMANENTES & DÉSIGNATION
+             ========================================================================= -->
+        <div class="a4-page">
+            <div>
+                <!-- En-tête compact page 2 -->
+                <table class="header-table">
+                    <tr>
+                        <td style="width: 25%; font-weight: bold; font-size: 10.5px; background: #f8fafc;">
+                            Lycée Professionnel<br>
+                            <span style="color: #1e3a8a; font-size: 10px;">Académie de Versailles</span><br>
+                            <span style="color: #047857; font-weight: 800; font-size: 9.5px;">BAC PRO MELEC</span>
+                        </td>
+                        <td style="width: 50%;" class="header-title">
+                            Fiche Synthèse : Liaison Complète<br>
+                            <span class="header-sub">Liaisons Arbre-Moyeu, Solutions Permanentes & Désignation ISO</span>
+                        </td>
+                        <td style="width: 25%; font-size: 10.5px; background: #f8fafc;">
+                            <strong>M. DIAKHO</strong><br>
+                            <span style="font-size: 9.5px; color: #475569;">Construction Mécanique</span>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- 5. Liaison Arbre-Moyeu (Clavettes & Circlips) -->
+                <div class="card-box">
+                    <h3>5. Liaisons Arbre-Moyeu : Transmission de Couple & Arrêt Axial</h3>
+                    <p style="margin-bottom: 4px;">
+                        Pour solidariser un élément tournant (poulie, pignon, accouplement, rotor) sur un arbre moteur, on dissocie la transmission du couple et le maintien axial :
+                    </p>
+                    <div class="grid-2">
+                        <div class="mini-card" style="border-left: 3px solid #f59e0b;">
+                            <h4>Clavette parallèle (Forme A, B, C)</h4>
+                            <p>• <strong>Emplacement :</strong> Logée dans la <em>rainure de clavette</em> de l'arbre et du moyeu.</p>
+                            <p>• <strong>Fonction mécanique :</strong> <span style="color: #b45309; font-weight: bold;">Bloquer la rotation relative (Rx = 0)</span> et transmettre le couple moteur entre l'arbre et le moyeu.</p>
+                            <p>• <strong>Attention :</strong> La clavette <u>ne bloque PAS la translation axiale</u> ! Elle doit toujours être associée à une butée axiale (épaulement + vis en bout d'arbre ou circlip).</p>
+                        </div>
+                        <div class="mini-card" style="border-left: 3px solid #0284c7;">
+                            <h4>Anneau élastique (Circlip)</h4>
+                            <p>• <strong>Emplacement :</strong> Monté dans une <em>gorge circulaire</em> usinée sur l'arbre ou dans l'alésage.</p>
+                            <p>• <strong>Fonction mécanique :</strong> <span style="color: #0369a1; font-weight: bold;">Bloquer la translation axiale (Tx = 0)</span> en formant un épaulement démontable d'arrêt.</p>
+                            <p>• <strong>Montage :</strong> Pince à circlips spécifique (ouvrante pour arbre extérieur, fermante pour alésage intérieur).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Solutions Constructives Permanentes (Indémontables) -->
+                <div class="card-box">
+                    <h3>6. Solutions Constructives Permanentes (Indémontables)</h3>
+                    <div class="grid-3">
+                        <div class="mini-card">
+                            <h4>Le Soudage (Procédé 111 - Arc MMA)</h4>
+                            <p>Union intime de deux pièces métalliques par fusion localisée avec métal d'apport. Indémontable, rigidité maximale, excellente étanchéité.</p>
+                            <p style="font-size: 8.8px; margin-top: 2px; color: #1e3a8a;"><strong>Symbole normalisé :</strong> Triangle $	riangle$ pour soudure d'angle, cote de gorge $a=2$, cercle $igcirc$ pour cordon périphérique.</p>
+                        </div>
+                        <div class="mini-card">
+                            <h4>Le Rivetage (Rivet)</h4>
+                            <p>Fixation définitive de pièces de faible épaisseur (tôles, coffrets) accessible d'un seul côté. Posé à la <strong>pince à riveter</strong> par rupture de la tige de traction.</p>
+                        </div>
+                        <div class="mini-card">
+                            <h4>Emmanchement forcé (Frettage)</h4>
+                            <p>Assemblage d'un arbre dans un alésage avec tolérance serrée (arbre plus grand que l'alésage). Réalisé à la presse hydraulique ou par dilatation thermique.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. Normalisation et Désignation des Vis (Règle ISO) -->
+                <div class="card-box">
+                    <h3>7. Règle Normative : Désignation Complète des Vis (ISO)</h3>
+                    <div class="formula-box">
+                        Désignation = Vis + [Type de Tête] + [Filetage métrique M] x [Longueur sous tête L] - [Classe]
+                    </div>
+                    <p style="margin: 3px 0 2px 0;"><strong>Exemple étudié au TD :</strong> <code style="font-size: 11px; background: #e0f2fe; padding: 2px 6px; border-radius: 4px; color: #0369a1; font-weight: bold;">Vis CHC M5 x 30</code></p>
+                    
+                    <div class="grid-4" style="margin-top: 4px;">
+                        <div class="mini-card">
+                            <h4 style="color: #1e3a8a;">Vis</h4>
+                            <p>Désigne la nature du composant mécanique fileté d'assemblage.</p>
+                        </div>
+                        <div class="mini-card">
+                            <h4 style="color: #2563eb;">CHC</h4>
+                            <p><strong>Forme de tête :</strong> Cylindrique Hexagonale Creuse (vis BTR à 6 pans creux).</p>
+                        </div>
+                        <div class="mini-card">
+                            <h4 style="color: #059669;">M5</h4>
+                            <p><strong>Filetage :</strong> Profil triangulaire métrique ISO de diamètre nominal Ø5 mm.</p>
+                        </div>
+                        <div class="mini-card">
+                            <h4 style="color: #d97706;">30</h4>
+                            <p><strong>Longueur sous tête :</strong> Longueur de la tige filetée L = 30 mm (hors tête).</p>
+                        </div>
+                    </div>
+                    <div class="alert-box" style="margin-top: 4px;">
+                        <strong>Règle de longueur sous tête :</strong> Pour les vis à tête bombée ou cylindrique (H, CHC, CB), la longueur L se mesure <u>exclusivement sous la tête</u>. Seules les vis à tête fraisée (FHC) ont une longueur nominale qui inclut la hauteur totale de la tête (affleurement).
+                    </div>
+                </div>
+
+                <!-- 8. Règles d'Or MELEC : Raccordement, Fixation et Maintenance -->
+                <div class="card-box" style="margin-bottom: 0;">
+                    <h3>8. Règles d'Or MELEC : Fixation Mécanique & Continuité Électrique</h3>
+                    <div class="grid-3">
+                        <div class="mini-card" style="border-left: 3px solid #10b981;">
+                            <h4>Continuité des masses (PE)</h4>
+                            <p>Dans une armoire électrique, les liaisons mécaniques de terre doivent percer la peinture isolante. Utiliser obligatoirement des <strong>rondelles à dents ou écrous crantés</strong> pour garantir une résistance de contact $R le 0,1,Omega$.</p>
+                        </div>
+                        <div class="mini-card" style="border-left: 3px solid #f59e0b;">
+                            <h4>Respect des couples de serrage</h4>
+                            <p>Un serrage excessif déforme le cuivre ou casse les goujons ; un serrage insuffisant crée un échauffement par effet Joule (point chaud et risque d'incendie). Utiliser une <strong>clé dynamométrique</strong> calibrée.</p>
+                        </div>
+                        <div class="mini-card" style="border-left: 3px solid #3b82f6;">
+                            <h4>Outillage adapté & Sécurité</h4>
+                            <p>Toujours utiliser l'outil exact (embout BTR calibré, pince à circlip droite/coudée, chasse-goupille de diamètre approprié). Ne jamais meuler ni forcer un circlip avec un tournevis.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bas de page 2 -->
+            <div class="page-footer">
+                <span>BAC PRO MELEC | Construction Mécanique — Académie de Versailles</span>
+                <span>Fiche Synthèse : La Liaison Complète (Encastrement)</span>
+                <span>Page 2 / 2 (Verso)</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SCRIPT DE VERROUILLAGE SÉCURISÉ SHA-256 (CODE ENSEIGNANT 7049) -->
+    <script>
+        const TEACHER_CODE_HASH = "f9a78464d1428b03ed04bcef318491614d11582986fa18447f72ae40b8a29d4d";
+
+        async function calculerSha256(str) {
+            try {
+                const buffer = new TextEncoder().encode(str);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            } catch (e) {
+                let hash = 0;
+                for (let i = 0; i < str.length; i++) {
+                    hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                    hash |= 0;
+                }
+                return String(hash);
+            }
+        }
+
+        async function verifierAuthentification() {
+            const isUnlocked = sessionStorage.getItem('synthese_unlocked') === 'true';
+            if (isUnlocked) {
+                deverrouillerPage();
+                return true;
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const codeParam = urlParams.get('auth');
+            if (codeParam) {
+                const hashParam = await calculerSha256(codeParam.trim());
+                if (hashParam === TEACHER_CODE_HASH) {
+                    sessionStorage.setItem('synthese_unlocked', 'true');
+                    deverrouillerPage();
+                    return true;
+                }
+            }
+
+            verrouillerPage();
+            return false;
+        }
+
+        async function validerCodeDirect() {
+            const input = document.getElementById('code-enseignant-input');
+            const errorMsg = document.getElementById('code-error-msg');
+            if (!input) return;
+
+            const codeSaisi = input.value.trim();
+            if (!codeSaisi) return;
+
+            const hashSaisi = await calculerSha256(codeSaisi);
+            if (hashSaisi === TEACHER_CODE_HASH) {
+                sessionStorage.setItem('synthese_unlocked', 'true');
+                if (errorMsg) errorMsg.style.display = 'none';
+                deverrouillerPage();
+            } else {
+                if (errorMsg) {
+                    errorMsg.style.display = 'block';
+                    errorMsg.innerText = "Code enseignant incorrect !";
+                }
+                input.focus();
+                input.select();
+            }
+        }
+
+        function deverrouillerPage() {
+            const overlay = document.getElementById('lock-overlay');
+            const content = document.getElementById('synthese-content');
+            if (overlay) overlay.style.display = 'none';
+            if (content) content.style.display = 'block';
+        }
+
+        function verrouillerPage() {
+            const overlay = document.getElementById('lock-overlay');
+            const content = document.getElementById('synthese-content');
+            if (overlay) overlay.style.display = 'flex';
+            if (content) content.style.display = 'none';
+            const input = document.getElementById('code-enseignant-input');
+            if (input) setTimeout(() => input.focus(), 150);
+        }
+
+        window.addEventListener('DOMContentLoaded', verifierAuthentification);
+    </script>
+</body>
+
+</html>

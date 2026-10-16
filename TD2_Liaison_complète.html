@@ -1,0 +1,2241 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TD2 : Les solutions constructives d'assemblage – La liaison complète</title>
+    <!-- Librairies locales pour archivage automatique du dossier complet en PDF sur Google Drive -->
+    <script src="js/html2canvas.min.js"></script>
+    <script src="js/jspdf.umd.min.js"></script>
+    <script src="js/td_images_data.js"></script>
+    <style>
+        /* =========================================================================
+           STYLE GLOBAL MELEC — ÉCRIN GRIS LISEUSE & FORMAT A4 STRICT
+           Thème Bleu Royal MELEC (#1e3a8a / #2563eb / #4472c4)
+           ========================================================================= */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #2563eb;
+            --primary-bg: #eef3fc;
+            --accent-border: #4472c4;
+            --header-bg: #eef3fc;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px 10px;
+            background-color: #525659; /* Fond liseuse PDF */
+            color: #222;
+            line-height: 1.45;
+            overflow-x: auto;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Champs éditables sélectionnables */
+        input,
+        textarea,
+        select {
+            -webkit-user-select: auto;
+            -moz-user-select: auto;
+            -ms-user-select: auto;
+            user-select: auto;
+        }
+
+        /* =========================================================================
+           DISPOSITION EN 2 LIGNES (LIGNE 1 : PAGES 1, 2, 3 | LIGNE 2 : PAGES 4, 5, 6)
+           ========================================================================= */
+        .pages-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            min-width: max-content;
+            box-sizing: border-box;
+            margin: 0 auto;
+        }
+
+        .pages-row {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 24px;
+            margin-bottom: 30px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .pages-row:last-child {
+            margin-bottom: 20px;
+        }
+
+        /* Format A4 certifié */
+        .a4-page {
+            width: 210mm;
+            min-width: 210mm;
+            max-width: 210mm;
+            min-height: 297mm;
+            max-height: 297mm;
+            margin: 0;
+            padding: 8mm 11mm;
+            background: white;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            border-radius: 2px;
+            flex-shrink: 0;
+            box-sizing: border-box;
+        }
+
+        /* En-tête type Lycée Professionnel */
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 8px;
+        }
+
+        .header-table td {
+            border: 2px solid var(--primary);
+            padding: 5px 8px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .header-title {
+            background-color: var(--header-bg);
+            font-size: 14.5px;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            line-height: 1.25;
+        }
+
+        .header-sub {
+            font-size: 11px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        /* Boîtes de section */
+        .section-box {
+            border: 2px solid var(--accent-border);
+            padding: 7px 10px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            background: #ffffff;
+        }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            border-bottom: 1.5px solid var(--accent-border);
+            padding-bottom: 3px;
+            margin-top: 0;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge-partie {
+            background: var(--primary);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Tableau technique */
+        .tech-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 4px;
+            margin-bottom: 4px;
+            font-size: 11px;
+        }
+
+        .tech-table th,
+        .tech-table td {
+            border: 1px solid #cbd5e1;
+            padding: 5px 6px;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        .tech-table th {
+            background-color: #f1f5f9;
+            color: #1e293b;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 10px;
+        }
+
+        /* Selects interactifs */
+        .tech-select {
+            width: 100%;
+            padding: 5px 8px;
+            border: 1.5px solid #94a3b8;
+            border-radius: 4px;
+            background-color: #f8fafc;
+            color: #0f172a;
+            font-size: 11px;
+            font-weight: 600;
+            outline: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .tech-select:focus {
+            border-color: var(--primary-light);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+
+        .tech-select.input-correct {
+            border-color: #16a34a !important;
+            background-color: #f0fdf4 !important;
+            color: #15803d !important;
+            font-weight: 700 !important;
+        }
+
+        .tech-select.input-wrong {
+            border-color: #dc2626 !important;
+            background-color: #fef2f2 !important;
+            color: #b91c1c !important;
+            font-weight: 700 !important;
+        }
+
+        /* Badges de correction */
+        .feedback-box {
+            font-size: 10px;
+            font-weight: 700;
+            margin-top: 3px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .feedback-correct {
+            display: inline-block;
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #86efac;
+        }
+
+        .feedback-wrong {
+            display: inline-block;
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fca5a5;
+        }
+
+        /* Images & Planches */
+        .plan-frame {
+            border: 1.5px solid #94a3b8;
+            border-radius: 5px;
+            padding: 3px;
+            background: #ffffff;
+            text-align: center;
+            position: relative;
+            margin-bottom: 6px;
+        }
+
+        .plan-frame img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            border-radius: 3px;
+            cursor: zoom-in;
+            transition: transform 0.2s ease;
+        }
+
+        .plan-frame img:hover {
+            transform: scale(1.008);
+        }
+
+        .zoom-btn-overlay {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: rgba(30, 41, 59, 0.85);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 3px 7px;
+            font-size: 9.5px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+            transition: background 0.2s;
+        }
+
+        .zoom-btn-overlay:hover {
+            background: var(--primary-light);
+        }
+
+        /* Pied de page A4 */
+        .footer-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9.5px;
+            color: #64748b;
+            border-top: 1px solid #cbd5e1;
+            padding-top: 4px;
+            margin-top: 4px;
+        }
+
+        /* Dock Supérieur Moderne */
+        .dock-bar {
+            position: sticky;
+            top: 10px;
+            z-index: 1000;
+            background: #1e293b;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            max-width: min(98vw, 1500px);
+            margin: 0 auto 16px auto;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+        }
+
+        .dock-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .dock-btn {
+            background: #334155;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .dock-btn:hover {
+            background: var(--primary-light);
+        }
+
+        .dock-btn.active-mode {
+            background: var(--primary-light);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+        }
+
+        .dock-tab {
+            background: #1e293b;
+            border: 1px solid #475569;
+            color: #cbd5e1;
+            padding: 4px 8px;
+            font-size: 11px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .dock-tab:hover,
+        .dock-tab.active {
+            background: var(--primary-light);
+            color: white;
+            border-color: var(--primary-light);
+        }
+
+        .dock-progress-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .dock-progress-bar-bg {
+            width: 100px;
+            height: 8px;
+            background: #475569;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .dock-progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: #22c55e;
+            transition: width 0.3s ease;
+        }
+
+        .dock-status-badge {
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .status-unvalidated {
+            background: #b45309;
+            color: #fef3c7;
+        }
+
+        .status-validated {
+            background: #15803d;
+            color: #dcfce7;
+        }
+
+        /* Modal Zoom */
+        .zoom-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.92);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            backdrop-filter: blur(4px);
+        }
+
+        .zoom-modal.active {
+            display: flex;
+        }
+
+        .zoom-modal-header {
+            padding: 10px 20px;
+            background: #1e293b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .zoom-modal-toolbar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .zoom-modal-toolbar button {
+            background: #334155;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .zoom-modal-toolbar button:hover {
+            background: var(--primary-light);
+        }
+
+        .zoom-modal-body {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: grab;
+        }
+
+        .zoom-modal-body.grabbing {
+            cursor: grabbing;
+        }
+
+        .zoom-modal-body img {
+            max-width: 92%;
+            max-height: 92%;
+            object-fit: contain;
+            transition: transform 0.08s ease-out;
+            transform-origin: center center;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        /* Styles spécifiques pour Paliers Éduscol */
+        .badge-vert-fonce {
+            background-color: #15803d;
+            color: white;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10.5px;
+        }
+
+        .badge-vert-clair {
+            background-color: #84cc16;
+            color: #0f172a;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10.5px;
+        }
+
+        .badge-jaune {
+            background-color: #eab308;
+            color: #0f172a;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10.5px;
+        }
+
+        .badge-rouge {
+            background-color: #dc2626;
+            color: white;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10.5px;
+        }
+
+        .hint-btn {
+            background: #fef08a;
+            color: #854d0e;
+            border: 1px solid #facc15;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-left: 6px;
+        }
+
+        .hint-btn:hover {
+            background: #fde047;
+        }
+
+        .hint-box {
+            display: none;
+            background: #fefce8;
+            border-left: 3px solid #eab308;
+            color: #713f12;
+            padding: 5px 8px;
+            font-size: 10px;
+            margin: 4px 0;
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* Modes d'affichage */
+        body.mode-vertical .pages-row {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        body.mode-single .a4-page {
+            display: none;
+        }
+
+        body.mode-single .a4-page.single-active {
+            display: flex;
+        }
+
+        @page {
+            size: A4 portrait;
+            margin: 0;
+        }
+
+        @media print {
+            html,
+            body {
+                background: white !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                width: 210mm !important;
+            }
+            .dock-bar,
+            .zoom-modal,
+            .zoom-btn-overlay {
+                display: none !important;
+            }
+            .pages-container {
+                display: block !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 210mm !important;
+            }
+            .pages-row {
+                display: block !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                gap: 0 !important;
+            }
+            .a4-page {
+                display: flex !important;
+                page-break-before: always !important;
+                page-break-after: always !important;
+                break-before: page !important;
+                break-after: page !important;
+                box-shadow: none !important;
+                margin: 0 !important;
+                padding: 8mm 11mm !important;
+                width: 210mm !important;
+                min-width: 210mm !important;
+                max-width: 210mm !important;
+                height: 297mm !important;
+                min-height: 297mm !important;
+                max-height: 297mm !important;
+                box-sizing: border-box !important;
+                overflow: hidden !important;
+            }
+            .a4-page:first-child {
+                page-break-before: avoid !important;
+                break-before: avoid !important;
+            }
+        }
+    
+        /* =========================================================================
+           STYLES BILAN & CADRE PÉDAGOGIQUE (CONFORME MODÈLE MELEC)
+           ========================================================================= */
+        .eval-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .eval-pending { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+        .eval-vert-fonce { background: #15803d; color: white; border: 1px solid #166534; }
+        .eval-vert-clair { background: #84cc16; color: #0f172a; border: 1px solid #65a30d; }
+        .eval-jaune { background: #eab308; color: #0f172a; border: 1px solid #ca8a04; }
+        .eval-rouge { background: #dc2626; color: white; border: 1px solid #b91c1c; }
+
+        .mini-card {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 8px 10px;
+        }
+        .mini-card h4 {
+            margin: 0 0 5px 0;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .activity-pill {
+            background: #1e3a8a;
+            color: white;
+            padding: 2.5px 8px;
+            border-radius: 4px;
+            font-weight: 800;
+            font-size: 10.5px;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+    
+        /* Styles des Cartes Questions & Grilles de Cotation TD */
+        .question-card {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-left: 4px solid var(--primary-light);
+            border-radius: 4px;
+            padding: 6px 10px;
+            margin-bottom: 6px;
+        }
+
+        .question-card.active-question {
+            border-left-color: #0284c7;
+            background: #fafcff;
+        }
+
+        .question-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .pts-badge {
+            background: #e2e8f0;
+            color: #334155;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 1px 6px;
+            border-radius: 4px;
+        }
+
+        .dim-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .dim-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            padding: 4px 6px;
+        }
+
+        .dim-card label {
+            display: block;
+            font-size: 9.5px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 3px;
+        }
+
+        .tech-select.filled {
+            border-color: var(--primary-light);
+            background-color: #eff6ff;
+            color: #1e3a8a;
+            font-weight: 600;
+        }
+
+    </style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body>
+
+    <!-- =========================================================================
+         DOCK NAVIGATION & CONTRÔLE SUPÉRIEUR MODERNE
+         ========================================================================= -->
+    <div class="dock-bar">
+        <div class="dock-left">
+            <span style="font-weight: 800; color: #93c5fd; font-size: 11.5px; letter-spacing: 0.5px;">TD2 LIAISON COMPLÈTE</span>
+            <div style="display: flex; gap: 4px; margin-left: 6px;">
+                <button class="dock-tab active" onclick="naviguerVersPage('page-1-garde')">P.1 Garde</button>
+                <button class="dock-tab" onclick="naviguerVersPage('page-2-contexte')">P.2 Contexte</button>
+                <button class="dock-tab" onclick="naviguerVersPage('page-3-bilan')">P.3 Bilan</button>
+                <button class="dock-tab" onclick="naviguerVersPage('page-4-partie1')">P.4 Q1 Convoyeur</button>
+                <button class="dock-tab" onclick="naviguerVersPage('page-5-technique')">P.5 Zone d'étude</button>
+                <button class="dock-tab" onclick="naviguerVersPage('page-6-partie2')">P.6 Q2-Q5 Poulie</button>
+                
+                
+            </div>
+            <div style="display: flex; gap: 4px; margin-left: 8px;">
+                <button id="btn-mode-lignes" class="dock-btn active-mode" onclick="basculerModeAffichage('lignes')" title="Affichage Grille">Grille</button>
+                <button id="btn-mode-vertical" class="dock-btn" onclick="basculerModeAffichage('vertical')" title="Défilement vertical continu">Vertical</button>
+                <button id="btn-mode-single" class="dock-btn" onclick="basculerModeAffichage('single')" title="Afficher une seule page à la fois">Page unique</button>
+            </div>
+        </div>
+
+        <div class="dock-right" style="display: flex; align-items: center; gap: 8px;">
+            <div class="dock-progress-box">
+                <span>Progression :</span>
+                <div class="dock-progress-bar-bg">
+                    <div id="dock-progress-bar" class="dock-progress-bar-fill" style="width: 0%;"></div>
+                </div>
+                <span id="dock-progress-text" style="color: #cbd5e1;">0 / 17</span>
+            </div>
+
+            <span id="dock-status-badge" class="dock-status-badge status-unvalidated">Non validé</span>
+
+            <button id="btn-dock-synthese" class="dock-btn" onclick="ouvrirFicheSynthese()" style="background: #0284c7;">
+                📄 Fiche Synthèse
+            </button>
+            <button id="btn-dock-pdf" class="dock-btn" onclick="exporterDossierPDF()" disabled style="background: #16a34a; opacity: 0.5; cursor: not-allowed;">
+                📥 Enregistrer PDF
+            </button>
+        </div>
+    </div>
+
+
+    <div class="pages-container">
+
+        <!-- =====================================================================
+             LIGNE 1 : PAGES 1, 2 ET 3 (Garde/Contrat, Cours/Contexte, Bilan)
+             ===================================================================== -->
+        <div class="pages-row">
+<div class="a4-page" id="page-1-garde">
+                <div>
+                    <table class="header-table" style="margin-bottom: 10px;">
+                        <tr>
+                            <td style="width: 25%; font-weight: 800; font-size: 11.5px; background: #f8fafc; color: var(--primary); line-height: 1.35;">
+                                Lycée Professionnel<br>
+                                <span style="font-size: 10.5px; color: #475569; font-weight: 600;">Académie de Versailles</span><br>
+                                <span style="font-size: 11px; color: #0284c7; font-weight: 700;">Bac Pro MELEC</span>
+                            </td>
+                            <td style="width: 50%;" class="header-title">
+                                TD2 : LES SOLUTIONS CONSTRUCTIVES D'ASSEMBLAGE<br>
+                                <span style="font-size: 12px; font-weight: 600; text-transform: none; color: #334155;">
+                                    La liaison complète
+                                </span>
+                            </td>
+                            <td style="width: 25%; font-size: 11px; background: #f8fafc; line-height: 1.35;">
+                                <strong>M. DIAKHO</strong><br>
+                                <span style="font-size: 10px; color: #475569;">Construction Mécanique</span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- 1. Fiche Contrat & Identification -->
+                    <div class="section-box" style="padding: 10px 14px; margin-bottom: 12px;">
+                        <div class="section-title" style="margin-bottom: 8px; justify-content: space-between; font-size: 13px;">
+                            <span>Fiche Contrat & Identification</span>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <label style="font-size: 11.5px; font-weight: 600; color: #334155; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                                    <input type="checkbox" id="check-binome" onchange="toggleBinomeMode()" style="width: 15px; height: 15px;">
+                                    Travailler en binôme (2 élèves)
+                                </label>
+                                <span id="badge-mode-travail" style="background: #e2e8f0; color: #475569; font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 4px;">Mode individuel</span>
+                            </div>
+                        </div>
+
+                        <!-- Grille Champs Identité -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; font-size: 11.5px;">
+                            <div>
+                                <label style="font-weight: 700; color: #1e3a8a; display: block; margin-bottom: 3px;">Nom * :</label>
+                                <input type="text" id="student-nom" class="tech-select" placeholder="Nom de famille" oninput="mettreAJourIdentite()" style="text-transform: uppercase; padding: 5px 10px; font-size: 12px; width: 100%;">
+                            </div>
+                            <div>
+                                <label style="font-weight: 700; color: #1e3a8a; display: block; margin-bottom: 3px;">Prénom * :</label>
+                                <input type="text" id="student-prenom" class="tech-select" placeholder="Prénom" oninput="mettreAJourIdentite()" style="padding: 5px 10px; font-size: 12px; width: 100%;">
+                            </div>
+                            <div>
+                                <label style="font-weight: 700; color: #1e3a8a; display: block; margin-bottom: 3px;">Classe * :</label>
+                                <select id="student-classe" class="tech-select" onchange="mettreAJourIdentite()" style="padding: 5px 8px; font-size: 12px; width: 100%;">
+                                    <option value="">-- Choisir la classe --</option>
+                                    <option value="1MELEC1" selected>1MELEC1</option>
+                                    <option value="1MELEC2">1MELEC2</option>
+                                    <option value="TMELEC1">TMELEC1</option>
+                                    <option value="TMELEC2">TMELEC2</option>
+                                    <option value="1MELFER MELEC">1MELFER MELEC</option>
+                                </select>
+                            </div>
+                            <div id="container-student-groupe">
+                                <label id="label-student-groupe" style="font-weight: 700; color: #1e3a8a; display: block; margin-bottom: 3px;">Groupe * :</label>
+                                <select id="student-groupe" class="tech-select" onchange="mettreAJourIdentite()" style="padding: 5px 8px; font-size: 12px; width: 100%;">
+                                    <option value="">-- Choisir le groupe --</option>
+                                    <option value="Groupe 1" selected>Groupe 1</option>
+                                    <option value="Groupe 2">Groupe 2</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Ligne Élève 2 (Masquée par défaut) -->
+                        <div id="box-eleve-2" style="display: none; grid-template-columns: 1fr 1fr; gap: 8px 16px; margin-top: 8px; font-size: 11.5px; border-top: 1px dashed #bfdbfe; padding-top: 8px;">
+                            <div>
+                                <label style="font-weight: 700; color: #1e3a8a; display: block; margin-bottom: 3px;">Nom Élève 2 * :</label>
+                                <input type="text" id="student-nom2" class="tech-select" placeholder="Nom de famille Élève 2" oninput="mettreAJourIdentite()" style="text-transform: uppercase; padding: 5px 10px; font-size: 12px; width: 100%;">
+                            </div>
+                            <div>
+                                <label style="font-weight: 700; color: #1e3a8a; display: block; margin-bottom: 3px;">Prénom Élève 2 * :</label>
+                                <input type="text" id="student-prenom2" class="tech-select" placeholder="Prénom Élève 2" oninput="mettreAJourIdentite()" style="padding: 5px 10px; font-size: 12px; width: 100%;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Objectif de la séance -->
+                    <div style="background: #eff6ff; border: 1.5px solid #93c5fd; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px;">
+                        <strong style="color: #1e3a8a; font-size: 13px; display: block; margin-bottom: 4px;">🎯 Objectif de la séance</strong>
+                        <p style="margin: 0; font-size: 12px; color: #1e293b; line-height: 1.5;">
+                            <strong>Objectif :</strong> Etre capable d'interpréter les solutions constructives d'un sous-ensemble mécanique en identifiant les éléments d'assemblage, pour préparer une opération.
+                        </p>
+                    </div>
+
+                    <!-- 3. Planche Image de Garde -->
+                    <div class="plan-frame" style="margin: 0; padding: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 6px; min-height: 380px;">
+                        <img src="img/liaison_complete_elements_garde.png" alt="Éléments mécaniques d'assemblage et de fixation – La liaison complète" style="max-height: 420px; width: 100%; object-fit: contain; border-radius: 4px; cursor: pointer;" onclick="ouvrirZoomPlan('img/liaison_complete_elements_garde.png', 'Éléments d\'assemblage et de fixation – La liaison complète')">
+                        <button class="zoom-btn-overlay" onclick="ouvrirZoomPlan('img/liaison_complete_elements_garde.png', 'Éléments d\'assemblage et de fixation – La liaison complète')">🔍 Cliquer pour agrandir l'image</button>
+                    </div>
+                </div>
+
+                <!-- Footer A4 -->
+                <table class="footer-table">
+                    <tr>
+                        <td style="width: 50%;">Lycée Professionnel — Enseignement Technique</td>
+                        <td style="width: 50%; text-align: right;">Page 1 / 6 — Page de Garde & Contrat</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- -----------------------------------------------------------------
+                 PAGE 2 : CADRE PÉDAGOGIQUE & CONTEXTE
+                 ----------------------------------------------------------------- -->
+            <div class="a4-page" id="page-2-contexte">
+                <div>
+                    <table class="header-table" style="margin-bottom: 10px;">
+                        <tr>
+                            <td style="width: 25%; font-weight: 800; font-size: 11.5px; background: #f8fafc; color: var(--primary); line-height: 1.35;">
+                                Lycée Professionnel<br>
+                                <span style="font-size: 10.5px; color: #475569; font-weight: 600;">Académie de Versailles</span><br>
+                                <span style="font-size: 11px; color: #0284c7; font-weight: 700;">Bac Pro MELEC</span>
+                            </td>
+                            <td style="width: 50%;" class="header-title">
+                                TD2 : LES SOLUTIONS CONSTRUCTIVES D'ASSEMBLAGE<br>
+                                <span style="font-size: 12px; font-weight: 600; text-transform: none; color: #334155;">
+                                    La liaison complète
+                                </span>
+                            </td>
+                            <td style="width: 25%; font-size: 11px; background: #f8fafc; line-height: 1.35;">
+                                <strong>M. DIAKHO</strong><br>
+                                <span style="font-size: 10px; color: #475569;">Construction Mécanique</span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- 1. Activité & Tâches Professionnelles -->
+                    <div class="section-box" style="padding: 10px 14px; margin-bottom: 12px;">
+                        <div class="section-title" style="margin-bottom: 7px; font-size: 13px;">
+                            <span>1. Activité & Tâches Professionnelles — Bac Pro MELEC</span>
+                        </div>
+                        <div style="margin-bottom: 7px; display: flex; align-items: center; gap: 8px;">
+                            <span class="activity-pill" style="padding: 3px 8px; font-size: 11.5px;">ACTIVITÉ 1</span>
+                            <strong style="font-size: 12px; color: #1e293b;">Préparation des opérations de réalisation, de mise en service et de maintenance</strong>
+                        </div>
+
+                        <div style="font-size: 11.5px; color: #334155; line-height: 1.5; margin-bottom: 7px; background: #f8fafc; padding: 8px 12px; border-radius: 5px; border: 1px solid #e2e8f0;">
+                            <strong>Tâches professionnelles :</strong><br>
+                            • <strong>T1-2 :</strong> Rechercher et expliquer les informations relatives aux opérations et aux conditions d'exécution.
+                        </div>
+
+                        <div style="font-size: 11.5px; color: #334155; line-height: 1.5; background: #f8fafc; padding: 8px 12px; border-radius: 5px; border: 1px solid #e2e8f0;">
+                            <strong>Compétences du Référentiel MELEC mobilisées :</strong><br>
+                            • <strong>C1 :</strong> Analyser les conditions de l'opération et son contexte.<br>
+                            • <strong>C2 :</strong> Organiser le poste de travail (porte-documents et stylo).
+                        </div>
+                    </div>
+
+                    <!-- 2. Mise en situation & Problématique Professionnelle -->
+                    <div class="section-box" style="padding: 10px 14px; margin-bottom: 12px;">
+                        <div class="section-title" style="margin-bottom: 7px; font-size: 13px;">
+                            <span>2. Mise en situation & Problématique Professionnelle</span>
+                        </div>
+
+                        <div style="background: #f0fdf4; border-left: 4px solid #22c55e; padding: 8px 12px; border-radius: 0 5px 5px 0; margin-bottom: 8px; font-size: 11.5px; line-height: 1.5; color: #14532d;">
+                            <strong>Mise en situation (MELEC) :</strong> Dans le cadre de son métier, l'électrotechnicien intervient régulièrement sur des armoires industrielles, des moteurs électriques, des platines de commande, des passerelles et des structures support de cheminement (chemins de câbles, potences). Ces équipements intègrent des sous-ensembles mécaniques assemblés par diverses solutions techniques (démontables ou permanentes) qui garantissent leur maintien, leur rigidité mécanique, la continuité de service et la sécurité des personnes.
+                        </div>
+
+                        <div style="background: #fefce8; border-left: 4px solid #eab308; padding: 8px 12px; border-radius: 0 5px 5px 0; font-size: 11.5px; line-height: 1.5; color: #713f12;">
+                            <strong>Problématique (MELEC) :</strong> Avant de procéder au montage, à la fixation ou à la maintenance mécanique d'un composant électrotechnique sur un bâti, comment interpréter les solutions constructives d'assemblage choisies, identifier avec rigueur les pièces de fixation ainsi que les outils appropriés, afin de réaliser une opération conforme au dossier technique ?
+                        </div>
+                    </div>
+
+                    <!-- 3. Conditions de réalisation (3 colonnes) -->
+                    <div class="section-box" style="padding: 10px 14px; margin-bottom: 0;">
+                        <div class="section-title" style="margin-bottom: 7px; font-size: 13px;">
+                            <span>3. Conditions de réalisation</span>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+                            <div class="mini-card" style="border-top: 3px solid #2563eb; padding: 8px 10px;">
+                                <h4 style="color: #1e3a8a; font-size: 12px; margin-bottom: 4px;">On donne :</h4>
+                                <ul style="margin: 0; padding-left: 14px; font-size: 11px; color: #334155; line-height: 1.45;">
+                                    <li style="margin-bottom: 3px;">Le document d'activité numérique à compléter.</li>
+                                    <li>La maquette 3D "convoyeur à rouleaux".</li>
+                                </ul>
+                            </div>
+
+                            <div class="mini-card" style="border-top: 3px solid #0284c7; padding: 8px 10px;">
+                                <h4 style="color: #0284c7; font-size: 12px; margin-bottom: 4px;">On demande :</h4>
+                                <ul style="margin: 0; padding-left: 14px; font-size: 11px; color: #334155; line-height: 1.45;">
+                                    <li style="margin-bottom: 3px;">Reconnaître et nommer les éléments de fixation.</li>
+                                    <li>Identifier les fonctions mécaniques et outils associés.</li>
+                                </ul>
+                            </div>
+
+                            <div class="mini-card" style="border-top: 3px solid #16a34a; padding: 8px 10px;">
+                                <h4 style="color: #16a34a; font-size: 12px; margin-bottom: 4px;">On exige :</h4>
+                                <ul style="margin: 0; padding-left: 14px; font-size: 11px; color: #334155; line-height: 1.45;">
+                                    <li style="margin-bottom: 3px;">L'exactitude du vocabulaire technique employé (désignation exacte).</li>
+                                    <li>L'autonomie dans le travail.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer A4 -->
+                <table class="footer-table">
+                    <tr>
+                        <td style="width: 50%;">Lycée Professionnel — Enseignement Technique</td>
+                        <td style="width: 50%; text-align: right;">Page 2 / 6 — Contexte & Référentiel</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- -----------------------------------------------------------------
+                 PAGE 3 : BILAN & VALIDATION DES ACQUIS
+                 ----------------------------------------------------------------- -->
+            <div class="a4-page" id="page-3-bilan">
+                <div>
+                    <table class="header-table" style="margin-bottom: 10px;">
+                        <tr>
+                            <td style="width: 25%; font-weight: 800; font-size: 11.5px; background: #f8fafc; color: var(--primary); line-height: 1.35;">
+                                Lycée Professionnel<br>
+                                <span style="font-size: 10.5px; color: #475569; font-weight: 600;">Académie de Versailles</span><br>
+                                <span style="font-size: 11px; color: #0284c7; font-weight: 700;">Bac Pro MELEC</span>
+                            </td>
+                            <td style="width: 50%;" class="header-title">
+                                TD2 : LES SOLUTIONS CONSTRUCTIVES D'ASSEMBLAGE<br>
+                                <span style="font-size: 12px; font-weight: 600; text-transform: none; color: #334155;">
+                                    La liaison complète
+                                </span>
+                            </td>
+                            <td style="width: 25%; font-size: 11px; background: #f8fafc; line-height: 1.35;">
+                                <strong>M. DIAKHO</strong><br>
+                                <span style="font-size: 10px; color: #475569;">Construction Mécanique</span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- Bandeau d'Identification Élève(s) -->
+                    <div id="bilan-eleve-bandeau" style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 5px; padding: 6px 12px; margin-bottom: 8px; font-size: 11px;">
+                        <div><strong>Élève(s) :</strong> <span id="bilan-nom-eleve" style="color: #1e3a8a; font-weight: 700;">--</span></div>
+                        <div><strong>Classe :</strong> <span id="bilan-classe-eleve" style="color: #1e3a8a; font-weight: 700;">1MELEC1</span><span id="bilan-groupe-wrapper"> | <strong>Groupe :</strong> <span id="bilan-groupe-eleve" style="color: #1e3a8a; font-weight: 700;">Groupe 1</span></span></div>
+                    </div>
+
+                    <!-- 1. Note Finale Officielle -->
+                    <div class="section-box" style="text-align: center; padding: 11px 16px; background: linear-gradient(135deg, #f8fafc, #eff6ff); border: 2px solid var(--primary-light); margin-bottom: 10px; border-radius: 6px;">
+                        <div style="font-size: 11.5px; font-weight: 800; letter-spacing: 0.8px; color: #1e3a8a; text-transform: uppercase;">
+                            NOTE FINALE OFFICIELLE
+                        </div>
+                        <div id="global-score-converted" style="font-size: 34px; font-weight: 900; color: #1e3a8a; margin: 3px 0;">
+                            --.- / 20
+                        </div>
+                        <div id="prof-eval-status-text" style="font-size: 11.5px; font-weight: 600; color: #64748b;">
+                            Dossier en attente de validation par l'enseignant
+                        </div>
+                        <div id="score-details-row" style="display: none; margin-top: 6px; font-size: 11px; color: #334155; border-top: 1px dashed #cbd5e1; padding-top: 5px;">
+                            Score brut questions : <strong id="global-score-raw">0.0 / 14.0 pts</strong>
+                        </div>
+                    </div>
+
+                    <!-- 2. Bilan Officiel par Compétences -->
+                    <div class="section-box" style="padding: 9px 14px; margin-bottom: 10px;">
+                        <div class="section-title" style="margin-bottom: 6px; font-size: 13px;">
+                            <span>Bilan Officiel par Compétences</span>
+                        </div>
+                        <table class="tech-table" style="font-size: 11px;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 10%; text-align: center; padding: 5px 6px;">Réf</th>
+                                    <th style="width: 52%; padding: 5px 8px;">Intitulé de la compétence</th>
+                                    <th style="width: 26%; text-align: center; padding: 5px 6px;">Niveau d'acquisition</th>
+                                    <th style="width: 12%; text-align: center; padding: 5px 6px;">Score</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="text-align: center; font-weight: 800; color: var(--primary); padding: 6px 4px;">C1</td>
+                                    <td style="padding: 6px 8px;"><strong>Analyser les conditions de l'opération et son contexte</strong> (Q1 à Q5 : identification des composants, solutions d'assemblage et éléments normalisés — 14 pts)</td>
+                                    <td style="text-align: center; padding: 6px 4px;">
+                                        <span id="eval-c1-palier" class="eval-badge eval-pending">EN ATTENTE</span>
+                                    </td>
+                                    <td id="eval-c1-pts" style="text-align: center; font-weight: 700; color: #475569; padding: 6px 4px;">--</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Paliers de référence Éduscol -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; margin-top: 7px; font-size: 10px; text-align: center;">
+                            <div style="background: #15803d; color: white; padding: 5px 2px; border-radius: 4px; font-weight: bold;">
+                                Très bonne maîtrise<br>16 &lt; Note ≤ 20
+                            </div>
+                            <div style="background: #84cc16; color: #0f172a; padding: 5px 2px; border-radius: 4px; font-weight: bold;">
+                                Maîtrise satisfaisante<br>11 &lt; Note ≤ 16
+                            </div>
+                            <div style="background: #eab308; color: #0f172a; padding: 5px 2px; border-radius: 4px; font-weight: bold;">
+                                Maîtrise fragile<br>4 &lt; Note ≤ 11
+                            </div>
+                            <div style="background: #dc2626; color: white; padding: 5px 2px; border-radius: 4px; font-weight: bold;">
+                                Maîtrise insuffisante<br>Note ≤ 4 / 20
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Compétence C2 — Organiser le poste de travail -->
+                    <div class="section-box" style="padding: 8px 14px; margin-bottom: 10px; background: #fafafa;">
+                        <div class="section-title" style="margin-bottom: 6px; justify-content: space-between; font-size: 12px;">
+                            <span>Compétence C2 — Organiser le poste de travail (Porte-documents & Stylo)</span>
+                            <span id="c2-status-badge" class="eval-badge eval-rouge" style="font-size: 10px; padding: 2px 7px;">MAÎTRISE INSUFFISANTE</span>
+                        </div>
+                        <div style="display: flex; gap: 24px; font-size: 11.5px; align-items: center;">
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                                <input type="checkbox" id="check-c2-classeur" onchange="mettreAJourC2()" style="width: 15px; height: 15px;">
+                                <strong>Porte-documents complet présent</strong>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                                <input type="checkbox" id="check-c2-stylo" onchange="mettreAJourC2()" style="width: 15px; height: 15px;">
+                                <strong>Stylo, règle & calculatrice présents</strong>
+                            </label>
+                        </div>
+                    </div>
+
+
+                    <!-- 4. Espace Réservé à l'Enseignant (Validation & Déverrouillage) -->
+                    <div class="section-box" style="background: #fffbeb; border: 1.5px solid #fde68a; padding: 8px 14px; margin-bottom: 10px;">
+                        <div class="section-title" style="color: #b45309; border-bottom: none; margin-bottom: 4px; font-size: 12px;">
+                            <span>🔒 Espace Réservé à l'Enseignant (Validation & Déverrouillage)</span>
+                        </div>
+                        <p style="margin: 0 0 6px 0; font-size: 11px; color: #78350f; line-height: 1.4;">
+                            Lorsque l'élève a complété l'intégralité du questionnaire, appelez l'enseignant pour contrôle et saisie du code secret.
+                        </p>
+                        <div id="prof-auth-box" style="display: flex; gap: 8px; align-items: center;">
+                            <input type="password" id="prof-code" placeholder="Code secret" style="padding: 6px 12px; border-radius: 5px; border: 1.5px solid #cbd5e1; font-size: 13px; text-align: center; letter-spacing: 2px; width: 190px;" onkeydown="if(event.key==='Enter') validerTD()">
+                            <button type="button" onclick="validerTD()" style="background: #2563eb; color: white; border: none; padding: 7px 16px; border-radius: 5px; font-weight: 700; font-size: 11.5px; cursor: pointer; transition: all 0.2s;">
+                                Valider le TD & Afficher la Note
+                            </button>
+                            <span id="prof-error-msg" style="color: #dc2626; font-size: 11px; font-weight: bold; display: none;"></span>
+                        </div>
+                        <div id="prof-validated-box" style="display: none; background: #ecfdf5; border: 1.5px solid #a7f3d0; padding: 7px 12px; border-radius: 5px; margin-top: 6px;">
+                            <div style="font-size: 12px; font-weight: bold; color: #065f46;">
+                                ✅ Dossier validé et certifié par l'enseignant !
+                            </div>
+                            <div style="font-size: 11px; color: #047857; margin-top: 2px;">
+                                L'archivage PDF est déverrouillé : <span id="saved-filename-display" style="font-weight: bold; font-family: monospace;"></span>
+                            </div>
+                            <div id="sync-status-msg" style="margin-top: 6px; font-size: 11px; font-weight: 600; color: #1e3a8a;"></div>
+                        </div>
+                    </div>
+
+                    <!-- 5. Observations & Visa de l'Enseignant -->
+                    <div class="section-box" style="padding: 7px 14px; margin-bottom: 0; background: #fafafa; border-style: dashed; border-color: #cbd5e1;">
+                        <div class="section-title" style="margin-bottom: 3px; font-size: 11.5px; color: #475569; border-bottom: none;">
+                            <span>📝 Observations & Conseils Individualisés de l'Enseignant</span>
+                        </div>
+                        <div style="min-height: 36px; font-size: 10.5px; color: #94a3b8; font-style: italic; display: flex; align-items: center;">
+                            Zone réservée aux appréciations pédagogiques pour le livret scolaire et le suivi des compétences professionnelles...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer A4 -->
+                <table class="footer-table">
+                    <tr>
+                        <td style="width: 50%;">Lycée Professionnel — Enseignement Technique</td>
+                        <td style="width: 50%; text-align: right;">Page 3 / 6 — Bilan & Synthèse des Notes</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        </div>
+        <!-- FIN LIGNE 1 -->
+
+        <!-- =====================================================================
+             LIGNE 2 : PAGES 4, 5 ET 6 (Repérage, Dossier Technique, Liaison Poulie)
+             ===================================================================== -->
+        <div class="pages-row">
+<div class="a4-page" id="page-4-partie1">
+                <div>
+                    <table class="header-table">
+                        <tr>
+                            <td style="width: 25%; font-weight: 800; font-size: 11px; background: #f8fafc; color: var(--primary); line-height: 1.3;">
+                                Lycée Professionnel<br>
+                                <span style="font-size: 10px; color: #475569; font-weight: 600;">Académie de Versailles</span><br>
+                                <span style="font-size: 10.5px; color: #0284c7; font-weight: 700;">Bac Pro MELEC</span>
+                            </td>
+                            <td style="width: 50%;" class="header-title">
+                                TD2 : LES SOLUTIONS CONSTRUCTIVES D'ASSEMBLAGE<br>
+                                <span style="font-size: 11.5px; font-weight: 600; text-transform: none; color: #334155;">
+                                    1ère Partie : Identification des composants
+                                </span>
+                            </td>
+                            <td style="width: 25%; font-size: 10.5px; background: #f8fafc; line-height: 1.3;">
+                                <strong>M. DIAKHO</strong><br>
+                                <span style="font-size: 9.5px; color: #475569;">Construction Mécanique</span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="section-box" style="margin-bottom: 6px; padding: 4px 8px;">
+                        <div class="section-title" style="margin-bottom: 2px;">
+                            <span class="badge-partie">Q1</span> 1ère PARTIE : IDENTIFICATION DES SOUS-ENSEMBLES DU CONVOYEUR
+                            <span class="pts-badge" style="margin-left: auto;">3 POINTS (C1)</span>
+                        </div>
+                        <p style="margin: 2px 0 4px 0; font-size: 10.5px; color: #1e293b;">
+                            <strong>Consigne Q1 :</strong> À l'aide de la représentation 3D ci-dessous, identifiez dans chaque liste déroulante le nom exact de chaque sous-ensemble repéré de <strong>A</strong> à <strong>F</strong> parmi : <em>Moteur, Réducteur, Système poulies/courroie, Système pignons/chaînes, Convoyeur à rouleaux, Paliers</em>.
+                        </p>
+                    </div>
+
+                    <!-- Image Planche Q1 annotée A à F -->
+                    <div class="plan-frame" style="height: 480px; margin-bottom: 8px;">
+                        <img src="img/td2_page_1.png" alt="Repérage sous-ensembles convoyeur repérés A à F" style="max-height: 470px;" onclick="ouvrirZoomPlan('img/td2_page_1.png', 'Q1 : Repérage des sous-ensembles A à F du convoyeur à rouleaux')">
+                        <button class="zoom-btn-overlay" onclick="ouvrirZoomPlan('img/td2_page_1.png', 'Q1 : Repérage des sous-ensembles A à F du convoyeur à rouleaux')">🔍 Zoom HD Plan</button>
+                    </div>
+
+                    <!-- Grille Sélecteurs Q1 (Ensembles A à F) -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; font-size: 10.5px;">
+                        <div class="dim-card">
+                            <label>Ensemble A :</label>
+                            <select id="q1_rep_a" data-qid="q1_rep_a" class="tech-select" onchange="onUserAnswerChange(this)">
+                                <option value="">-- Choisir l'élément --</option>
+                                <option value="Moteur">Moteur</option>
+                                <option value="Réducteur">Réducteur</option>
+                                <option value="Convoyeur à rouleaux">Convoyeur à rouleaux</option>
+                                <option value="Système poulies/courroie">Système poulies/courroie</option>
+                                <option value="Paliers">Paliers</option>
+                                <option value="Système pignons/chaînes">Système pignons/chaînes</option>
+                            </select>
+                        </div>
+                        <div class="dim-card">
+                            <label>Ensemble D :</label>
+                            <select id="q1_rep_d" data-qid="q1_rep_d" class="tech-select" onchange="onUserAnswerChange(this)">
+                                <option value="">-- Choisir l'élément --</option>
+                                <option value="Paliers">Paliers</option>
+                                <option value="Convoyeur à rouleaux">Convoyeur à rouleaux</option>
+                                <option value="Moteur">Moteur</option>
+                                <option value="Système pignons/chaînes">Système pignons/chaînes</option>
+                                <option value="Réducteur">Réducteur</option>
+                                <option value="Système poulies/courroie">Système poulies/courroie</option>
+                            </select>
+                        </div>
+                        <div class="dim-card">
+                            <label>Ensemble B :</label>
+                            <select id="q1_rep_b" data-qid="q1_rep_b" class="tech-select" onchange="onUserAnswerChange(this)">
+                                <option value="">-- Choisir l'élément --</option>
+                                <option value="Convoyeur à rouleaux">Convoyeur à rouleaux</option>
+                                <option value="Système poulies/courroie">Système poulies/courroie</option>
+                                <option value="Réducteur">Réducteur</option>
+                                <option value="Moteur">Moteur</option>
+                                <option value="Système pignons/chaînes">Système pignons/chaînes</option>
+                                <option value="Paliers">Paliers</option>
+                            </select>
+                        </div>
+                        <div class="dim-card">
+                            <label>Ensemble E :</label>
+                            <select id="q1_rep_e" data-qid="q1_rep_e" class="tech-select" onchange="onUserAnswerChange(this)">
+                                <option value="">-- Choisir l'élément --</option>
+                                <option value="Réducteur">Réducteur</option>
+                                <option value="Moteur">Moteur</option>
+                                <option value="Paliers">Paliers</option>
+                                <option value="Système pignons/chaînes">Système pignons/chaînes</option>
+                                <option value="Convoyeur à rouleaux">Convoyeur à rouleaux</option>
+                                <option value="Système poulies/courroie">Système poulies/courroie</option>
+                            </select>
+                        </div>
+                        <div class="dim-card">
+                            <label>Ensemble C :</label>
+                            <select id="q1_rep_c" data-qid="q1_rep_c" class="tech-select" onchange="onUserAnswerChange(this)">
+                                <option value="">-- Choisir l'élément --</option>
+                                <option value="Système pignons/chaînes">Système pignons/chaînes</option>
+                                <option value="Paliers">Paliers</option>
+                                <option value="Système poulies/courroie">Système poulies/courroie</option>
+                                <option value="Réducteur">Réducteur</option>
+                                <option value="Convoyeur à rouleaux">Convoyeur à rouleaux</option>
+                                <option value="Moteur">Moteur</option>
+                            </select>
+                        </div>
+                        <div class="dim-card">
+                            <label>Ensemble F :</label>
+                            <select id="q1_rep_f" data-qid="q1_rep_f" class="tech-select" onchange="onUserAnswerChange(this)">
+                                <option value="">-- Choisir l'élément --</option>
+                                <option value="Système poulies/courroie">Système poulies/courroie</option>
+                                <option value="Convoyeur à rouleaux">Convoyeur à rouleaux</option>
+                                <option value="Paliers">Paliers</option>
+                                <option value="Moteur">Moteur</option>
+                                <option value="Réducteur">Réducteur</option>
+                                <option value="Système pignons/chaînes">Système pignons/chaînes</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer A4 -->
+                <table class="footer-table">
+                    <tr>
+                        <td style="width: 50%;">Bac Pro MELEC — TD2 Liaison complète</td>
+                        <td style="width: 50%; text-align: right;">Page 4 / 6 — 1ère Partie : Identification des composants</td>
+                    </tr>
+                </table>
+            </div>
+
+<div class="a4-page" id="page-5-technique">
+                <div>
+                    <table class="header-table">
+                        <tr>
+                            <td style="width: 25%; font-weight: 800; font-size: 11px; background: #f8fafc; color: var(--primary); line-height: 1.3;">
+                                Lycée Professionnel<br>
+                                <span style="font-size: 10px; color: #475569; font-weight: 600;">Académie de Versailles</span><br>
+                                <span style="font-size: 10.5px; color: #0284c7; font-weight: 700;">Bac Pro MELEC</span>
+                            </td>
+                            <td style="width: 50%;" class="header-title">
+                                TD2 : LES SOLUTIONS CONSTRUCTIVES D'ASSEMBLAGE<br>
+                                <span style="font-size: 11.5px; font-weight: 600; text-transform: none; color: #334155;">
+                                    Dossier Technique : Zone d'étude & Nomenclature
+                                </span>
+                            </td>
+                            <td style="width: 25%; font-size: 10.5px; background: #f8fafc; line-height: 1.3;">
+                                <strong>M. DIAKHO</strong><br>
+                                <span style="font-size: 9.5px; color: #475569;">Construction Mécanique</span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="section-box" style="margin-bottom: 6px; padding: 4px 8px;">
+                        <div class="section-title" style="margin-bottom: 2px;">
+                            <span class="badge-partie">DT</span> PRÉSENTATION DE LA ZONE D'ÉTUDE : SOUS-ENSEMBLE ARBRE INTERMÉDIAIRE
+                            <span class="pts-badge" style="margin-left: auto;">DOC TECHNIQUE (C1)</span>
+                        </div>
+                        <p style="margin: 2px 0 0 0; font-size: 11px; color: #1e293b;">
+                            <strong>Présentation de la zone d'étude :</strong> Nous allons étudier la partie intermédiaire du système (voir ci-dessous).
+                        </p>
+                    </div>
+
+                    <!-- Planche Technique Page 2 HD -->
+                    <div class="plan-frame" style="height: 575px; margin-bottom: 4px;">
+                        <img src="img/td2_page_2.png" alt="Dossier technique : Coupe et vue éclatée arbre intermédiaire" style="max-height: 565px;" onclick="ouvrirZoomPlan('img/td2_page_2.png', 'Dossier Technique : Zone d\'étude, Vue en coupe, Nomenclature et Vue éclatée 3D')">
+                        <button class="zoom-btn-overlay" onclick="ouvrirZoomPlan('img/td2_page_2.png', 'Dossier Technique : Zone d\'étude, Vue en coupe, Nomenclature et Vue éclatée 3D')">🔍 Zoom HD Dossier Technique</button>
+                    </div>
+                </div>
+
+                <!-- Footer A4 -->
+                <table class="footer-table">
+                    <tr>
+                        <td style="width: 50%;">Bac Pro MELEC — TD2 Liaison complète</td>
+                        <td style="width: 50%; text-align: right;">Page 5 / 6 — Dossier Technique : Zone d'étude & Nomenclature</td>
+                    </tr>
+                </table>
+            </div>
+
+<div class="a4-page" id="page-6-partie2">
+                <div>
+                    <table class="header-table">
+                        <tr>
+                            <td style="width: 25%; font-weight: 800; font-size: 11px; background: #f8fafc; color: var(--primary); line-height: 1.3;">
+                                Lycée Professionnel<br>
+                                <span style="font-size: 10px; color: #475569; font-weight: 600;">Académie de Versailles</span><br>
+                                <span style="font-size: 10.5px; color: #0284c7; font-weight: 700;">Bac Pro MELEC</span>
+                            </td>
+                            <td style="width: 50%;" class="header-title">
+                                TD2 : LES SOLUTIONS CONSTRUCTIVES D'ASSEMBLAGE<br>
+                                <span style="font-size: 11.5px; font-weight: 600; text-transform: none; color: #334155;">
+                                    2ème Partie : Liaison Axe 9 / Poulie 11
+                                </span>
+                            </td>
+                            <td style="width: 25%; font-size: 10.5px; background: #f8fafc; line-height: 1.3;">
+                                <strong>M. DIAKHO</strong><br>
+                                <span style="font-size: 9.5px; color: #475569;">Construction Mécanique</span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- Titre Section -->
+                    <div class="section-box" style="margin-bottom: 6px; padding: 4px 8px;">
+                        <div class="section-title" style="margin-bottom: 2px;">
+                            <span class="badge-partie">2P</span> ÉTUDE DE LA LIAISON COMPLÈTE ENTRE L'AXE 9 ET LA POULIE 11
+                            <span class="pts-badge" style="margin-left: auto;">11 POINTS (C1)</span>
+                        </div>
+                    </div>
+
+                    <!-- Q2 : Rotation poulie 11 -->
+                    <div class="question-card" style="margin-bottom: 6px; padding: 5px 8px;">
+                        <div class="question-title">
+                            <span><strong>Q2 :</strong> Déterminer la pièce permettant le <strong>blocage en rotation</strong> entre la pièce repère 9 et la pièce repère 11.</span>
+                            <span class="pts-badge">1 PT (C1)</span>
+                        </div>
+                        <select id="q2_rotation_poulie" data-qid="q2_rotation_poulie" class="tech-select" onchange="onUserAnswerChange(this)">
+                                <option value="">-- Sélectionner la pièce de blocage en rotation --</option>
+                                <option value="Clavette forme A 6x6x38 (repère 6)">Clavette forme A 6x6x38 (repère 6)</option>
+                                <option value="Vis CHC M5x12 (repère 13)">Vis CHC M5x12 (repère 13)</option>
+                                <option value="Rondelle plate LL 5 (repère 12)">Rondelle plate LL 5 (repère 12)</option>
+                                <option value="Clavette forme C 5x5x16 (repère 10)">Clavette forme C 5x5x16 (repère 10)</option>
+                                <option value="Vis Hc M5x6 (repère 4)">Vis Hc M5x6 (repère 4)</option>
+                            </select>
+                    </div>
+
+                    <!-- Q3 : Translation poulie 11 -->
+                    <div class="question-card" style="margin-bottom: 6px; padding: 5px 8px;">
+                        <div class="question-title">
+                            <span><strong>Q3 :</strong> Déterminer les pièces permettant le <strong>blocage en translation</strong> entre la pièce repère 9 et la pièce repère 11.</span>
+                            <span class="pts-badge">2 PTS (C1)</span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <div>
+                                <label style="font-size: 10px; font-weight: 700; color: #1e3a8a;">Pièce d'arrêt axial en bout d'arbre :</label>
+                                <select id="q3_translation_poulie_1" data-qid="q3_translation_poulie_1" class="tech-select" onchange="onUserAnswerChange(this)">
+                                <option value="">-- Choisir la 1ère pièce --</option>
+                                <option value="Clavette forme C 5x5x16 (repère 10)">Clavette forme C 5x5x16 (repère 10)</option>
+                                <option value="Vis H M10x30 (repère 7)">Vis H M10x30 (repère 7)</option>
+                                <option value="Vis Hc M5x6 (repère 3)">Vis Hc M5x6 (repère 3)</option>
+                                <option value="Vis CHC M5x12 (repère 13)">Vis CHC M5x12 (repère 13)</option>
+                            </select>
+                            </div>
+                            <div>
+                                <label style="font-size: 10px; font-weight: 700; color: #1e3a8a;">Pièce d'appui et répartition de serrage :</label>
+                                <select id="q3_translation_poulie_2" data-qid="q3_translation_poulie_2" class="tech-select" onchange="onUserAnswerChange(this)">
+                                <option value="">-- Choisir la 2ème pièce --</option>
+                                <option value="Axe (repère 9)">Axe (repère 9)</option>
+                                <option value="Ecrou autofreiné H FR M10 (repère 8)">Ecrou autofreiné H FR M10 (repère 8)</option>
+                                <option value="Poulie Ø92 (repère 11)">Poulie Ø92 (repère 11)</option>
+                                <option value="Rondelle plate LL 5 (repère 12)">Rondelle plate LL 5 (repère 12)</option>
+                            </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Q4 : Cotes vis CHC 13 -->
+                    <div class="question-card" style="margin-bottom: 6px; padding: 5px 8px;">
+                        <div class="question-title">
+                            <span><strong>Q4 :</strong> En vous aidant de la nomenclature (<em>Vis CHC M5x12</em>) et du tableau ISO 4762, déterminer les cotes de la vis repère 13.</span>
+                            <span class="pts-badge">4 PTS (C1)</span>
+                        </div>
+                        <div style="text-align: center; margin: 2px 0 6px 0; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px; padding: 3px;">
+                            <img src="img/td2_p3_vis_chc.png" alt="Norme ISO 4762 pour vis CHC M5x12" style="max-height: 150px; max-width: 100%; object-fit: contain; cursor: pointer;" onclick="ouvrirZoomPlan('img/td2_p3_vis_chc.png', 'Tableau de norme NF EN ISO 4762 et schéma de la vis CHC repère 13')">
+                        </div>
+                        <div class="dim-grid" style="grid-template-columns: repeat(4, 1fr);">
+                            <div class="dim-card">
+                                <label>Diamètre d (filetage) :</label>
+                                <select id="q4_vis13_d" data-qid="q4_vis13_d" class="tech-select" onchange="onUserAnswerChange(this)">
+                                    <option value="">-- Choisir d --</option>
+                                    <option value="3 mm">3 mm</option>
+                                    <option value="4 mm">4 mm</option>
+                                    <option value="5 mm">5 mm</option>
+                                    <option value="6 mm">6 mm</option>
+                                    <option value="8 mm">8 mm</option>
+                                </select>
+                            </div>
+                            <div class="dim-card">
+                                <label>Longueur sous tête l :</label>
+                                <select id="q4_vis13_l" data-qid="q4_vis13_l" class="tech-select" onchange="onUserAnswerChange(this)">
+                                    <option value="">-- Choisir l --</option>
+                                    <option value="8 mm">8 mm</option>
+                                    <option value="10 mm">10 mm</option>
+                                    <option value="12 mm">12 mm</option>
+                                    <option value="16 mm">16 mm</option>
+                                    <option value="20 mm">20 mm</option>
+                                </select>
+                            </div>
+                            <div class="dim-card">
+                                <label>Diamètre tête a :</label>
+                                <select id="q4_vis13_a" data-qid="q4_vis13_a" class="tech-select" onchange="onUserAnswerChange(this)">
+                                    <option value="">-- Choisir a --</option>
+                                    <option value="7 mm">7 mm</option>
+                                    <option value="8,5 mm">8,5 mm</option>
+                                    <option value="9,3 mm">9,3 mm</option>
+                                    <option value="10 mm">10 mm</option>
+                                    <option value="13 mm">13 mm</option>
+                                </select>
+                            </div>
+                            <div class="dim-card">
+                                <label>Six pans creux s1 :</label>
+                                <select id="q4_vis13_s1" data-qid="q4_vis13_s1" class="tech-select" onchange="onUserAnswerChange(this)">
+                                    <option value="">-- Choisir s1 --</option>
+                                    <option value="2,5 mm">2,5 mm</option>
+                                    <option value="3 mm">3 mm</option>
+                                    <option value="4 mm">4 mm</option>
+                                    <option value="5 mm">5 mm</option>
+                                    <option value="6 mm">6 mm</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Q5 : Cotes rondelle plate 12 -->
+                    <div class="question-card" style="margin-bottom: 2px; padding: 5px 8px;">
+                        <div class="question-title">
+                            <span><strong>Q5 :</strong> En vous aidant de la nomenclature (<em>Rondelle plate LL 5</em>) et du tableau des rondelles extra larges, déterminer les cotes de la rondelle 12.</span>
+                            <span class="pts-badge">4 PTS (C1)</span>
+                        </div>
+                        <div style="text-align: center; margin: 2px 0 6px 0; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px; padding: 3px;">
+                            <img src="img/td2_p3_rondelle.png" alt="Dimensions Rondelle plate extra large LL" style="max-height: 160px; max-width: 100%; object-fit: contain; cursor: pointer;" onclick="ouvrirZoomPlan('img/td2_p3_rondelle.png', 'Tableau de dimensions et schéma de la rondelle plate extra large LL repère 12')">
+                        </div>
+                        <div class="dim-grid">
+                            <div class="dim-card">
+                                <label>Diamètre vis d :</label>
+                                <select id="q5_rond12_d" data-qid="q5_rond12_d" class="tech-select" onchange="onUserAnswerChange(this)">
+                                    <option value="">-- Choisir d --</option>
+                                    <option value="3 mm">3 mm</option>
+                                    <option value="4 mm">4 mm</option>
+                                    <option value="5 mm">5 mm</option>
+                                    <option value="6 mm">6 mm</option>
+                                    <option value="8 mm">8 mm</option>
+                                </select>
+                            </div>
+                            <div class="dim-card">
+                                <label>Diamètre intérieur d1 :</label>
+                                <select id="q5_rond12_d1" data-qid="q5_rond12_d1" class="tech-select" onchange="onUserAnswerChange(this)">
+                                    <option value="">-- Choisir d1 --</option>
+                                    <option value="3,2 mm">3,2 mm</option>
+                                    <option value="4,3 mm">4,3 mm</option>
+                                    <option value="5,3 mm">5,3 mm</option>
+                                    <option value="6,4 mm">6,4 mm</option>
+                                    <option value="8,4 mm">8,4 mm</option>
+                                </select>
+                            </div>
+                            <div class="dim-card">
+                                <label>Diamètre extérieur d2 :</label>
+                                <select id="q5_rond12_d2" data-qid="q5_rond12_d2" class="tech-select" onchange="onUserAnswerChange(this)">
+                                    <option value="">-- Choisir d2 --</option>
+                                    <option value="14 mm">14 mm</option>
+                                    <option value="16 mm">16 mm</option>
+                                    <option value="20 mm">20 mm</option>
+                                    <option value="24 mm">24 mm</option>
+                                    <option value="30 mm">30 mm</option>
+                                </select>
+                            </div>
+                            <div class="dim-card">
+                                <label>Épaisseur s :</label>
+                                <select id="q5_rond12_s" data-qid="q5_rond12_s" class="tech-select" onchange="onUserAnswerChange(this)">
+                                    <option value="">-- Choisir s --</option>
+                                    <option value="0,8 mm">0,8 mm</option>
+                                    <option value="1,0 mm">1,0 mm</option>
+                                    <option value="1,2 mm">1,2 mm</option>
+                                    <option value="1,5 mm">1,5 mm</option>
+                                    <option value="2,0 mm">2,0 mm</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer A4 -->
+                <table class="footer-table">
+                    <tr>
+                        <td style="width: 50%;">Bac Pro MELEC — TD2 Liaison complète</td>
+                        <td style="width: 50%; text-align: right;">Page 6 / 6 — 2ème Partie : Liaison Axe 9 / Poulie 11</td>
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+        <!-- FIN LIGNE 2 -->
+
+
+
+    </div>
+    <!-- FIN PAGES CONTAINER -->
+
+<div id="zoom-modal" class="zoom-modal" onclick="fermerZoomPlan(event)">
+        <div class="zoom-modal-header" onclick="event.stopPropagation()">
+            <span id="zoom-modal-title">Visualiseur Haute Définition</span>
+            <div class="zoom-modal-toolbar">
+                <button onclick="zoomModifier(0.25)">🔍 +</button>
+                <button onclick="zoomModifier(-0.25)">🔍 -</button>
+                <button onclick="zoomReinitialiser()">↺ Réinitialiser</button>
+                <button onclick="fermerZoomPlan(event)" style="background: #dc2626;">✖ Fermer</button>
+            </div>
+        </div>
+        <div id="zoom-modal-body" class="zoom-modal-body" onmousedown="zoomStartPan(event)">
+            <img id="zoom-modal-img" src="" alt="Agrandissement">
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         MOTEUR JAVASCRIPT : ANTI-TRICHE RC4, ÉVALUATION, INDICES & EXPORT PDF
+         ========================================================================= -->
+
+
+<script>
+        // Corrigé intégralement chiffré en RC4-Drop512 (Zéro réponse en clair dans le code)
+        const CORRIGE_ENCRYPTE = "r8wjJ62TBGJd0dCJSiBM3aYfG6NY7qruKsuGYzQOe2y2SrB/EDo4tGqKIrWFrbtalu58WYczpXLifC7OG2UjROkX53s1emP/mp/VoEZAg0Y/ZDJUh7rK+j/q80XXtWiyu5NwQZCGIVHNz4imbHIvY88q3Va/jb351TRu4M4ekg/inS8zrWOGpKIddlfWSUhPnhMCLhEPPaTY3Yf4ZXfCX9hnfNaT4QzTOfTI/zr8raULOmDHcIF+vvCGIC7xjihYKlKY2JJ6fwkepBfr8/cVCa/QZl5NQISluL+9J765/LXbOmlGArRZrP+e6IBAquop3Hh9tKY6xjmpO+kT7rdCYDKPGZQnngI//Zo3nmApZBkHRfkEhf5gSgI1KAO40pRjx9YLPU85YqPcmDXS51l52tzbEZcpXRBl3oQidt6i9m4LZu1lbdPM19N1V9BmbBc5jpssl7yenWL4bdb7SHcPOpOznuuUz6CobPuK6n8eGg8Z0LKw91sYjbVcO72V4BsJ+woyi28qevMLg28Q4M4foVksEShU7bqQxOn9ilNIqIbt33QEWcPfbGVV+Q2DFAuUDuDu805cSGOIgznZFY0nL+4ixvbdd5mWsc9p9HMtSP6CDuE9pGCU0aviZNa5Fo16SH1vjOJ8Ck4gEZnt3Kk4YTgnSsxbBwyAJwU9c54mC2HbteNBbAShdT5Dzu0Hl3+mi7i8P3twDZYcCRViccDewQOAVeiAGgHjNCnXccy5ERV/JWC6Eq7k2rLTlh1QyCTdRv3Dhikd3Jy/u+epER5l5phxbPsEkm8qr8Y3EvfhqeNZ9qgD5dOW7JToyl6zX7p64Gp2Pszokzac5jeiLha5RB7Ip1NGOag4wuaXDz/ogdXy89rdaen+Mh/IBKHJVR4I1jX3Qu9RXAV/9lrUbRKoD9OfvagnWDwLGJ4bluHLhVPUl27vkmICbfXOrloND3xPXBVxUeM6Nfkvzqcmr19MKRlmZmta97sQxJxQOV+6yN+xt8dUg4NXNfrzOduI9gH/sXkHYwFuYv9fp63uI6F7JIo6eQ+Nmi5SxPDt2GstQ3emhV7hlpVN/kpXMjREfqZxy+cYZbWb59450EIsi0gy6fHuQQWIVbpwAt+P57G0PbEOLnEQDf3cADavKKAh/OazInAVRRz7p9M4VHMR4imWuF4MRzCdHaf+OqqYwH99/ccJE5PqKpK2Vw5i5oVHiu9GTABGEI3ILfb6nMCqPhWVRxhwf9juiCCRcNhPkoC5D1nVpp9wlqn1MCihvOGkDaaGE5l03mkc5tQczWTdt638bPIKC0xNNOrMY2gPxfCt1Jd0QRk3AHUqE9VtEmyLdiIDoAm2+WP/6DAPY5ZWxRcAv2dEdaBESWTUaN34yBABGYzoKNzvfLPAzAnDuW/SRg2rXsFke+JzwN5atyxep3q3a1Qr5eBOFKvOoLK1IMgvwF36OIqHiBIOBAiW/bCDAqnL7ACjqPTEWA4jUx8BBfSRLAEYmgZ3DMaxGxvJELyvcviCndPlhJz14pIPYHOf+mOSy+6cHUfdjmxYZ8YPrecjp6Lh+zj3T6Aztj3gLyYkGw+VrYy7Owb3g9j7SAqH4fSlOpmQ4yRFpHe75BN1ddpvOqt2nkfgrv2X/Rk8sMZnU1gMKqiKdMvKkHNoSwnrcyJO8NBMgfOeSoC7gfhXHvfGgLsmoiXmp1vUvFeN/ZDQTFKl+mYqt+ClwWyawkjGBzMQAGDF5HKd0e6UQ4AFSuxPGWb2BsH39ahXd/k0WexyxKfERdiK0Zx5aMuODuZeuSYJDA2bxo06OD68hmEDqS0ASsbV0FyCUOkwtzeSJxXSU0lGjYUoFoXwJKDo1IsyedjDxvR0CMgTW5SY7llnmZftLTnQEa8SmZaJHNJLCHOf/XlJCQsRF4hgaGuE4PAIIpDCMydvzLaxGjhCN+gcRMuQ1/+eWWbOsvydf0Y0UeJmyxXWSuAdeCZ66xM2uoMguFauRuE09vbrPvaNGtjT5liEgQ8ibCAN8O5zbSS8Yekvs3MK+KExX9HGM4PnhXPMRGdS1LeYVFZ4ym1zJKmiDFNxogBHInqQdnzubZoOXJ6AY1RHuRcdhLlS89VqmxLCPFOHP6f9TGXnAgOU+iQ5Ugc39WzuYAxUdKwZN0YFczB+QbGvsNS5xaVhG0omM7/vxfig+gJTM4oBNt+ihFZFhmQATIkCiHl40lU3cpOG/y8NQcDDeWKZUANl25y4kcX5AEyhXRLj1o8GHOe54HH2n0GDvSGPfFf0+w9a0h2VmrJGndoKt7VGeomEUuHtOVzqJYQqEYcgwh8v+ySuvk27Ip5jFXkrlh2X06sQF6EFIXTUs7GNTOWBr2fuRne/xbZMllcM9/cXAHXdC4A9m02SvXrVLf5fuOIFQeXW8bH6ltOb+CZNdBivo6pp9AveaGi6mNriV6aZbGSsrJcZkIrDeN3GHHMFiXEtP1deeD/wYzHjz55oIIsb6Fy2rd4WHvZ3DR/kN24+klZRXVLA+4EOGyMaVp1MeProoppAN6dDQyhi9NAnYRuN02xf4qDQD5v/rquyNP0hfRo5XiBG8C4VD1f1ptp7qjWEY+kbu31C2cY26CPCH+kYv8uPNzBv1xUXqaasUxUWGVYRrAC20Qa3JfT4UwvtUNVUcYCHgVGcUfWXC9PGp5cxaek7Qo3OmKeMMoOAT/rHdHNf1yYLSvzQHAIWRH9fIHdUVhCW478L0sTrpMX+t1fBJsFFvl+huYuC2Jfk0/Ikw+6sM8DIgECyZMHuHG+PJf1/Mmnm+dM0O4k1DVqSMiOa1F4geMDMlpj4PDGIgh8YblohNCvpFKqrGpt446UL6DfB5hS/7hnhGH/IKS3EHtu2mM7aHNmSnG71wqiMI7WoekAxLOJmixlpP9okXZtaiDnT0waw0nqz5/PAjmB5nDo3j1ltcK/Ue43P25gawpYk9rMc8/phgR0gj7wPn9zr3KMnxQTlhLFCn//oss/2gTRo9IabhnEkONmRQLRgB2wx7aeJkK2SzZkGmsaMOJ6rgdSBH20zOVWqZiEzPeLsO1d1ER0wo4yqxiPj+uTTFrg9wT36u4Uiptl0lSQslCk7v6AO6A9lvDSGEd2xtwLSyywYHcPjddEV8SX+ddGeTqw/vIQPBiJnHlAit1zi/1hQoNIPwMPn1CbKpSw5ih4VIjBXmN7iMvxu2h761kpgn5gagNChQOTDL/n8bEwR+kMzSeyNpb4t9WuxBR0SaGx4+njnBGMgdbVGIj5GczPtlNM1sOXQFEjnlF3cz3Ofuzh3inSEc4uI1PDwOBAOvJlbJt7zn9TDSrlFJ+QhR20DF01y79QsuI2iifz9bqWeMEFNTMYzE3k9qQZT6hSlGD/JRC7Cr/NhtM4m9MwX+YDNq3pVorlTDHdFIY1l2rwJk1nIly278CtD4KWttijjlvKtDr4VoYQY2Y63qK0iLsw2RcFMbt+03T1/Ez+zKeiHNctjhk9x5wwMzwx+DWVhi0GeRIVTdv3SAR6xISMCG3dyPF+3o0NEPzi7jufNLV+tqsn3f381N6Os8HMRR15PWGgmKVpb4Ebbq/Fggw7oamUwAti4dtxEmuJCWCYRtgR47kfS6BfFMmf0zGxUnDmvtcSHe8GyGZXZexP05TaQ4lnXDCwmmqBiVJ9KcMVUfXQKJnmtlsWsbnfzXX7yeK8HelKj3sr5+H7kTdNrfsad/3AFBq2efWZMnQDfdRNLaz2f5uHsUWvDxoKzQJwKwM5fw5bDxFuHYgVzLF9mblnwZ9mi+8oFihlVSxKOmNkEzwaPGJMUSeM77I0EVBkKwGMZRUBDvuZtIFUWMlURxCyoCDwACAiR3qTeTKp8+mym7vDRsyMW1AA0WYkh2BfOUXWFO5KY3yUQIz/AjranboDLJmilYvY/Gs6QgTyiFjxb6kan1bGVAXID0GQc68ZChdg3e9ZvB3TCCym3xMN2elOvcUITzShppUatigVfMBn/TSphIev82UpDtv+MvlxzMXF6n5kQNtwkPXPEHKVqk2gbaZCnClNClEAUwdVz9J5w0XcObfwp/vVxnGc11wEkGqZywgd4FyFRCLp6xrAOsIYJl9UWAZrZ+8efrKGih7xjOKy7OuNcCXmTqKFnSADuhlERVyChXTrIC0Grl9Vc/Ypv+qs/aev+YKLyz2v3pbzTaOkvxzXzFTWe6aeu/jms63/QzgZxaP+NT6vmiivdNZWXgfVgr/0uEBA2WkjmG8jwlhro9aBZFDRf0v84ojJHWb1n3QuRJ/0gzx6FhV5de8+Io1SeT2EC9WGHEzrpFEMgYd1W7+tVkQT4Ra4n3fNiJzG5jzvBzJE7YsyQYHXCfBfXU0IFpIswyjel7QVQbJcnJnD/ZJy2iYjsoPo6d0l4FSlMW027cfN6V5elXjLiaBB09QrXLRCIcTFTKLX/eNk9Fjl1rN5zEFt3d8OnaWdQ7jIFLfhbRXsFUM77GijdCoznHXwU+0l5IReaSfIgTLkY/IcqGH1uxeUIJTnlCG6JJ8U+xwDZHwdUDNxWwcG3Pz+4zGiRxHbQqkjbY/B6T3VkIAyiVATYIbTZ9DTJAAjy+DRtkM9OPE+AOz6P6ZhtEeTQwJWhOAtD6vKvZO3Dh7ZKDYGVDaBvEynwDb1WKunKEuFERPT8FTlE8JY6Rn9K3BxRZQ==";
+        let payloadDechiffre = null;
+        let isDuoMode = false;
+        let usedHintsCount = 0;
+
+        const ALL_PAGES = [
+            'page-1-garde',
+            'page-2-contexte',
+            'page-3-bilan',
+            'page-4-partie1',
+            'page-5-technique',
+            'page-6-partie2'
+        ];
+
+        const GOOGLE_APPS_SCRIPT_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzEX7l1BYeOLoGc1ULmUh5SlyGkLivc5f_xB6o3G81wco9rE4hpcZmVE2cYHofURNr_6Q/exec";
+
+        // Déchiffrement RC4-Drop512 avec TextDecoder UTF-8
+        function rc4Drop512Decrypt(base64Cipher, key) {
+            try {
+                let s = new Array(256);
+                for (let i = 0; i < 256; i++) s[i] = i;
+                let j = 0;
+                for (let i = 0; i < 256; i++) {
+                    j = (j + s[i] + key.charCodeAt(i % key.length)) % 256;
+                    let temp = s[i]; s[i] = s[j]; s[j] = temp;
+                }
+                let i = 0; j = 0;
+                for (let k = 0; k < 512; k++) {
+                    i = (i + 1) % 256;
+                    j = (j + s[i]) % 256;
+                    let temp = s[i]; s[i] = s[j]; s[j] = temp;
+                }
+                let binaryStr = atob(base64Cipher);
+                let plainBytes = new Uint8Array(binaryStr.length);
+                for (let k = 0; k < binaryStr.length; k++) {
+                    i = (i + 1) % 256;
+                    j = (j + s[i]) % 256;
+                    let temp = s[i]; s[i] = s[j]; s[j] = temp;
+                    let K = s[(s[i] + s[j]) % 256];
+                    plainBytes[k] = binaryStr.charCodeAt(k) ^ K;
+                }
+                return new TextDecoder('utf-8').decode(plainBytes);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function toggleBinomeMode() {
+            const check = document.getElementById('check-binome');
+            const boxEleve2 = document.getElementById('box-eleve-2');
+            const badge = document.getElementById('badge-mode-travail');
+            isDuoMode = check.checked;
+            if (isDuoMode) {
+                boxEleve2.style.display = 'grid';
+                badge.innerText = 'Mode binôme (2 élèves)';
+                badge.style.background = '#dbeafe';
+                badge.style.color = '#1e40af';
+            } else {
+                boxEleve2.style.display = 'none';
+                badge.innerText = 'Mode individuel';
+                badge.style.background = '#e2e8f0';
+                badge.style.color = '#475569';
+            }
+            mettreAJourIdentite();
+        }
+
+        function mettreAJourIdentite() {
+            const nom1 = document.getElementById('student-nom').value.trim();
+            const prenom1 = document.getElementById('student-prenom').value.trim();
+            const classe = document.getElementById('student-classe').value;
+            const groupeContainer = document.getElementById('container-student-groupe');
+            const groupeWrapper = document.getElementById('bilan-groupe-wrapper');
+            const groupeElem = document.getElementById('student-groupe');
+
+            if (classe === '1MELFER MELEC') {
+                if (groupeContainer) groupeContainer.style.display = 'none';
+                if (groupeWrapper) groupeWrapper.style.display = 'none';
+            } else {
+                if (groupeContainer) groupeContainer.style.display = 'block';
+                if (groupeWrapper) groupeWrapper.style.display = 'inline';
+            }
+
+            let texteNom = nom1 ? (nom1.toUpperCase() + ' ' + prenom1) : '--';
+            if (isDuoMode) {
+                const nom2 = document.getElementById('student-nom2').value.trim();
+                const prenom2 = document.getElementById('student-prenom2').value.trim();
+                if (nom2) texteNom += ' & ' + nom2.toUpperCase() + ' ' + prenom2;
+            }
+
+            const bilanNom = document.getElementById('bilan-nom-eleve');
+            if (bilanNom) bilanNom.innerText = texteNom;
+
+            const bilanClasse = document.getElementById('bilan-classe-eleve');
+            if (bilanClasse) bilanClasse.innerText = classe || '--';
+
+            const bilanGroupe = document.getElementById('bilan-groupe-eleve');
+            if (bilanGroupe) bilanGroupe.innerText = (groupeElem ? groupeElem.value : '--');
+        }
+
+        function verifierChampsIdentite() {
+            const nom = document.getElementById('student-nom').value.trim();
+            const prenom = document.getElementById('student-prenom').value.trim();
+            const classe = document.getElementById('student-classe').value;
+            const groupe = document.getElementById('student-groupe').value;
+            const manquants = [];
+            if (!nom) manquants.push("Nom");
+            if (!prenom) manquants.push("Prénom");
+            if (!classe) manquants.push("Classe");
+            if (classe !== '1MELFER MELEC' && !groupe) manquants.push("Groupe");
+            if (isDuoMode) {
+                const nom2 = document.getElementById('student-nom2').value.trim();
+                const prenom2 = document.getElementById('student-prenom2').value.trim();
+                if (!nom2) manquants.push("Nom Élève 2");
+                if (!prenom2) manquants.push("Prénom Élève 2");
+            }
+            return { valide: manquants.length === 0, manquants: manquants };
+        }
+
+        function genererNomFichierBase() {
+            const nom1 = (document.getElementById('student-nom').value.trim() || 'ELEVE1').toUpperCase().replace(/\s+/g, '_');
+            const prenom1 = (document.getElementById('student-prenom').value.trim() || '').replace(/\s+/g, '_');
+            const classe = (document.getElementById('student-classe').value || 'CLASSE').replace(/\s+/g, '_');
+            let base = classe + '_' + nom1 + (prenom1 ? '_' + prenom1 : '');
+            if (isDuoMode) {
+                const nom2 = (document.getElementById('student-nom2').value.trim() || 'ELEVE2').toUpperCase().replace(/\s+/g, '_');
+                const prenom2 = (document.getElementById('student-prenom2').value.trim() || '').replace(/\s+/g, '_');
+                base += '_DUO_' + nom2 + (prenom2 ? '_' + prenom2 : '');
+            }
+            base += '_TD_Liaison_Complete';
+            return base;
+        }
+
+        function onUserAnswerChange(elem) {
+            if (elem) {
+                if (elem.value) elem.classList.add('filled');
+                else elem.classList.remove('filled');
+            }
+            const totalSelects = 17;
+            const allSelects = document.querySelectorAll('select[data-qid]');
+            let answered = 0;
+            allSelects.forEach(sel => {
+                if (sel.value) answered++;
+            });
+            const pct = Math.round((answered / totalSelects) * 100);
+            const bar = document.getElementById('dock-progress-bar');
+            const text = document.getElementById('dock-progress-text');
+            if (bar) bar.style.width = pct + '%';
+            if (text) text.innerText = answered + ' / ' + totalSelects;
+        }
+
+        function basculerModeAffichage(mode) {
+            document.body.classList.remove('mode-vertical', 'mode-single');
+            document.querySelectorAll('.dock-btn').forEach(b => {
+                if (b.id && b.id.startsWith('btn-mode-')) b.classList.remove('active-mode');
+            });
+
+            if (mode === 'vertical') {
+                document.body.classList.add('mode-vertical');
+                document.getElementById('btn-mode-vertical').classList.add('active-mode');
+            } else if (mode === 'single') {
+                document.body.classList.add('mode-single');
+                document.getElementById('btn-mode-single').classList.add('active-mode');
+                naviguerVersPage('page-1-garde');
+            } else {
+                document.getElementById('btn-mode-lignes').classList.add('active-mode');
+            }
+        }
+
+        function naviguerVersPage(pageId) {
+            const tabs = document.querySelectorAll('.dock-tab');
+            const idx = ALL_PAGES.indexOf(pageId);
+
+            tabs.forEach((t, i) => {
+                if (i === idx) t.classList.add('active');
+                else t.classList.remove('active');
+            });
+
+            if (document.body.classList.contains('mode-single')) {
+                document.querySelectorAll('.a4-page').forEach(p => p.classList.remove('single-active'));
+                const target = document.getElementById(pageId);
+                if (target) target.classList.add('single-active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                const el = document.getElementById(pageId);
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function toggleHint(hintId) {}
+
+        function validerTD() {
+            const errorElem = document.getElementById('prof-error-msg');
+            errorElem.style.display = 'none';
+
+            const checkIdentite = verifierChampsIdentite();
+            if (!checkIdentite.valide) {
+                errorElem.innerHTML = "⚠️ <strong>Identification obligatoire !</strong> Veuillez renseigner en Page 1 : <u>" + 
+                    checkIdentite.manquants.join(", ") + "</u> avant de valider.";
+                errorElem.style.display = 'block';
+                naviguerVersPage('page-1-garde');
+                return;
+            }
+
+            const code = document.getElementById('prof-code').value.trim();
+            if (!code) {
+                errorElem.innerText = "Veuillez appeler votre professeur pour valider votre travail.";
+                errorElem.style.display = 'block';
+                return;
+            }
+
+            const decrypted = rc4Drop512Decrypt(CORRIGE_ENCRYPTE, code);
+            if (!decrypted || !decrypted.includes('LIAISON_COMPLETE_SECRET_KEY_OK')) {
+                errorElem.innerText = "Code enseignant incorrect !";
+                errorElem.style.display = 'block';
+                return;
+            }
+
+            try {
+                payloadDechiffre = JSON.parse(decrypted);
+            } catch (e) {
+                errorElem.innerText = "Erreur de décodage du corrigé chiffré.";
+                errorElem.style.display = 'block';
+                return;
+            }
+
+            document.getElementById('prof-auth-box').style.display = 'none';
+            document.getElementById('prof-validated-box').style.display = 'block';
+
+            const dockBadge = document.getElementById('dock-status-badge');
+            if (dockBadge) {
+                dockBadge.className = 'dock-status-badge status-validated';
+                dockBadge.innerText = 'Validé';
+            }
+
+            const btnPdf = document.getElementById('btn-dock-pdf');
+            if (btnPdf) {
+                btnPdf.disabled = false;
+                btnPdf.style.opacity = '1';
+                btnPdf.style.cursor = 'pointer';
+            }
+
+            const nomFichier = genererNomFichierBase();
+            const savedFileName = document.getElementById('saved-filename-display');
+            if (savedFileName) savedFileName.innerText = nomFichier + '.pdf';
+
+            calculerNotesEtCompetences();
+            envoyerSynchronisationGoogleSheets();
+        }
+
+        function normaliserTexte(txt) {
+            if (!txt) return "";
+            return txt.toLowerCase()
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                .replace(/\s+/g, ' ')
+                .replace(/,/g, '.')
+                .trim();
+        }
+
+        function calculerNotesEtCompetences() {
+            if (!payloadDechiffre || !payloadDechiffre.answers) return;
+
+            const answers = payloadDechiffre.answers;
+            let earnedPoints = 0;
+            const totalQuestionsPoints = payloadDechiffre.totalPoints || 14.0;
+
+            for (const [qid, data] of Object.entries(answers)) {
+                const selectElem = document.querySelector('select[data-qid="' + qid + '"]');
+                if (!selectElem) continue;
+
+                const userValNorm = normaliserTexte(selectElem.value);
+                const attenduNorm = normaliserTexte(data.val);
+
+                let isCorrect = (userValNorm === attenduNorm);
+                if (!isCorrect && data.alts) {
+                    isCorrect = data.alts.some(alt => normaliserTexte(alt) === userValNorm);
+                }
+
+                if (isCorrect) {
+                    earnedPoints += data.pts;
+                    selectElem.style.borderColor = '#15803d';
+                    selectElem.style.backgroundColor = '#ecfdf5';
+                    selectElem.style.color = '#15803d';
+                    selectElem.style.fontWeight = 'bold';
+                } else {
+                    selectElem.style.borderColor = '#dc2626';
+                    selectElem.style.backgroundColor = '#fef2f2';
+                    selectElem.style.color = '#dc2626';
+                }
+            }
+
+            const noteSur20Brute = (earnedPoints / totalQuestionsPoints) * 20.0;
+            const noteFinale = Math.max(0, Math.min(20, Math.round(noteSur20Brute * 10) / 10));
+
+            const bigScoreElem = document.getElementById('global-score-converted');
+            if (bigScoreElem) bigScoreElem.innerText = noteFinale.toFixed(1) + " / 20";
+
+            const rawScoreElem = document.getElementById('global-score-raw');
+            if (rawScoreElem) rawScoreElem.innerText = earnedPoints.toFixed(1) + " / " + totalQuestionsPoints.toFixed(1) + " pts";
+
+            const scoreDetailsRow = document.getElementById('score-details-row');
+            if (scoreDetailsRow) scoreDetailsRow.style.display = 'block';
+
+            const statusTextElem = document.getElementById('prof-eval-status-text');
+            if (statusTextElem) {
+                statusTextElem.innerHTML = "<span style='color: #15803d; font-weight: bold;'>✅ Dossier validé et certifié conforme</span>";
+            }
+
+            const palierC1 = getPalierClass(noteFinale);
+            const c1Badge = document.getElementById('eval-c1-palier');
+            if (c1Badge) {
+                c1Badge.className = 'eval-badge ' + palierC1.badgeClass;
+                c1Badge.innerText = palierC1.texte.toUpperCase();
+            }
+            const c1Pts = document.getElementById('eval-c1-pts');
+            if (c1Pts) {
+                c1Pts.innerText = earnedPoints.toFixed(1) + " / " + totalQuestionsPoints.toFixed(1) + " pts";
+            }
+
+            const dockBadge = document.getElementById('dock-status-badge');
+            if (dockBadge) {
+                dockBadge.innerText = 'Validé (' + noteFinale.toFixed(1) + '/20)';
+            }
+        }
+
+        function getPalierClass(note) {
+            if (note > 16) return { badgeClass: 'eval-vert-fonce', texte: 'Très bonne maîtrise' };
+            if (note > 11) return { badgeClass: 'eval-vert-clair', texte: 'Maîtrise satisfaisante' };
+            if (note > 4)  return { badgeClass: 'eval-jaune', texte: 'Maîtrise fragile' };
+            return { badgeClass: 'eval-rouge', texte: 'Maîtrise insuffisante' };
+        }
+
+        function mettreAJourC2() {
+            const c1 = document.getElementById('check-c2-classeur');
+            const c2 = document.getElementById('check-c2-stylo');
+            const badge = document.getElementById('c2-status-badge');
+            if (!badge) return;
+
+            const count = (c1 && c1.checked ? 1 : 0) + (c2 && c2.checked ? 1 : 0);
+            if (count === 2) {
+                badge.className = 'eval-badge eval-vert-fonce';
+                badge.innerText = 'TRÈS BONNE MAÎTRISE';
+            } else if (count === 1) {
+                badge.className = 'eval-badge eval-jaune';
+                badge.innerText = 'MAÎTRISE FRAGILE';
+            } else {
+                badge.className = 'eval-badge eval-rouge';
+                badge.innerText = 'MAÎTRISE INSUFFISANTE';
+            }
+        }
+
+        async function construireDossierCompletPDF() {
+            try {
+                const jsPDFClass = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+                if (typeof html2canvas === 'undefined' || !jsPDFClass) {
+                    console.warn("Librairies PDF html2canvas ou jsPDF non disponibles.");
+                    return null;
+                }
+
+                const pdf = new jsPDFClass({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4',
+                    compress: true
+                });
+
+                const pagesIds = ALL_PAGES;
+
+                const wasSingleMode = document.body.classList.contains('mode-single');
+                if (wasSingleMode) document.body.classList.remove('mode-single');
+
+                if (window.TD_IMAGES_DATA) {
+                    document.querySelectorAll('img').forEach(img => {
+                        const src = img.getAttribute('src');
+                        if (src) {
+                            const filename = src.split('/').pop().split('?')[0];
+                            if (window.TD_IMAGES_DATA[filename]) {
+                                img.src = window.TD_IMAGES_DATA[filename];
+                            }
+                        }
+                    });
+                }
+
+                for (let i = 0; i < pagesIds.length; i++) {
+                    const pageElem = document.getElementById(pagesIds[i]);
+                    if (!pageElem) continue;
+
+                    const canvas = await html2canvas(pageElem, {
+                        scale: 1.6,
+                        useCORS: true,
+                        allowTaint: true,
+                        backgroundColor: '#ffffff',
+                        logging: false,
+                        onclone: (clonedDoc) => {
+                            const clonedPage = clonedDoc.getElementById(pagesIds[i]);
+                            if (clonedPage) {
+                                clonedPage.querySelectorAll('select').forEach(sel => {
+                                    const val = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : '';
+                                    const div = clonedDoc.createElement('div');
+                                    div.className = sel.className;
+                                    div.style.cssText = sel.style.cssText;
+                                    div.style.display = 'inline-block';
+                                    div.style.padding = '4px 8px';
+                                    div.style.border = sel.value ? '1.5px solid #2563eb' : '1px solid #cbd5e1';
+                                    div.style.background = sel.value ? '#eff6ff' : '#ffffff';
+                                    div.style.fontWeight = 'bold';
+                                    div.style.fontSize = '10.5px';
+                                    div.style.color = sel.value ? '#1e3a8a' : '#94a3b8';
+                                    div.innerText = val || '-- Non renseigné --';
+                                    sel.parentNode.replaceChild(div, sel);
+                                });
+                            }
+                        }
+                    });
+
+                    const imgData = canvas.toDataURL('image/jpeg', 0.90);
+                    if (i > 0) pdf.addPage('a4', 'portrait');
+                    pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+                }
+
+                if (wasSingleMode) document.body.classList.add('mode-single');
+                window.lastGeneratedPDF = pdf;
+                return pdf;
+            } catch (e) {
+                console.error("Erreur lors de la génération du PDF complet :", e);
+                return null;
+            }
+        }
+
+        async function genererDossierCompletPDFBase64() {
+            try {
+                let pdf = window.lastGeneratedPDF;
+                if (!pdf) {
+                    pdf = await construireDossierCompletPDF();
+                }
+                if (!pdf) return null;
+                const dataUri = pdf.output('datauristring');
+                const base64Index = dataUri.indexOf('base64,');
+                if (base64Index !== -1) {
+                    return dataUri.substring(base64Index + 7);
+                }
+                return null;
+            } catch (e) {
+                console.warn("Erreur export PDF base64 :", e);
+                return null;
+            }
+        }
+
+        async function exporterDossierPDF() {
+            const baseNom = genererNomFichierBase();
+            const nomFichierPDF = baseNom + '.pdf';
+
+            const syncMsg = document.getElementById('sync-status-msg');
+            if (syncMsg) {
+                syncMsg.innerHTML = '<span style="color: #1e3a8a; font-weight: bold;">⏳ Préparation du PDF haute fidélité...</span>';
+            }
+
+            try {
+                let pdf = window.lastGeneratedPDF;
+                if (!pdf) {
+                    pdf = await construireDossierCompletPDF();
+                }
+
+                if (pdf) {
+                    pdf.save(nomFichierPDF);
+                    if (syncMsg) {
+                        syncMsg.innerHTML = '<span style="color: #15803d; font-weight: bold;">✅ Dossier PDF téléchargé : ' + nomFichierPDF + '</span>';
+                    }
+                } else {
+                    throw new Error("Impossible de générer le document PDF.");
+                }
+            } catch (err) {
+                console.error("Erreur téléchargement PDF :", err);
+                if (syncMsg) {
+                    syncMsg.innerHTML = '<span style="color: #dc2626; font-weight: bold;">❌ Erreur création PDF : ' + err.message + '</span>';
+                }
+            }
+        }
+
+        async function envoyerSynchronisationGoogleSheets() {
+            const syncMsg = document.getElementById('sync-status-msg');
+            if (syncMsg) {
+                syncMsg.innerHTML = '<span style="color: #1e3a8a; font-weight: bold;">📡 Synchronisation en cours avec le classeur enseignant...</span>';
+            }
+
+            const nom1 = document.getElementById('student-nom').value.trim();
+            const prenom1 = document.getElementById('student-prenom').value.trim();
+            const nom2 = isDuoMode && document.getElementById('student-nom2') ? document.getElementById('student-nom2').value.trim() : '';
+            const prenom2 = isDuoMode && document.getElementById('student-prenom2') ? document.getElementById('student-prenom2').value.trim() : '';
+            const classe = document.getElementById('student-classe').value || '-';
+            const isMelfer = (classe === '1MELFER MELEC');
+            const groupe = isMelfer ? '-' : (document.getElementById('student-groupe').value || '-');
+
+            const scoreElem = document.getElementById('global-score-converted');
+            const scoreTexte = scoreElem ? scoreElem.innerText.replace(' / 20', '').trim() : '0';
+            const noteVal = parseFloat(scoreTexte) || 0;
+            const palierC1 = getPalierClass(noteVal).texte;
+
+            const c1Checked = document.getElementById('check-c2-classeur')?.checked;
+            const c2Checked = document.getElementById('check-c2-stylo')?.checked;
+            const c2Count = (c1Checked ? 1 : 0) + (c2Checked ? 1 : 0);
+            const palierC2 = c2Count === 2 ? 'Très bonne maîtrise' : (c2Count === 1 ? 'Maîtrise fragile' : 'Maîtrise insuffisante');
+
+            const scoreBrutElem = document.getElementById('global-score-raw');
+            const scoreBrutTexte = scoreBrutElem ? scoreBrutElem.innerText : '0.0 / 14.0 pts';
+
+            const baseNomFichier = genererNomFichierBase();
+            const nomFichierPDF = baseNomFichier + '.pdf';
+
+            let pdfBase64 = null;
+            try {
+                pdfBase64 = await genererDossierCompletPDFBase64();
+            } catch (e) {
+                console.warn("Échec génération pdf base64 pour webhook :", e);
+            }
+
+            const payload = {
+                titreTD: "TD2 : Les solutions constructives d'assemblage – La liaison complète",
+                sujetTD: "TD2 liaison complète",
+                classe: classe,
+                groupe: groupe,
+                modeBinome: isDuoMode ? "OUI" : "NON",
+                isBinome: isDuoMode ? "Oui" : "Non",
+                eleve1: nom1.toUpperCase() + ' ' + prenom1,
+                eleve2: isDuoMode ? (nom2.toUpperCase() + ' ' + prenom2) : "",
+                noteSur20: noteVal.toFixed(2),
+                scoreBrut: scoreBrutTexte,
+                scoreQuestions: scoreBrutTexte,
+                indicesUtilises: 0,
+                penaliteNoteSur20: "0.00 pt",
+                penaliteIndicesValeur: 0,
+                competenceC1: palierC1,
+                competenceC2: palierC2,
+                nomFichier: baseNomFichier,
+                nomFichierPDF: nomFichierPDF,
+                pdfBase64: pdfBase64,
+                filiere: isMelfer ? "MELFER" : "MELEC",
+                eleve1_nom: nom1.toUpperCase(),
+                eleve1_prenom: prenom1,
+                eleve2_nom: nom2 ? nom2.toUpperCase() : "",
+                eleve2_prenom: prenom2 || "",
+                nom: nom1.toUpperCase(),
+                prenom: prenom1,
+                nom2: nom2 ? nom2.toUpperCase() : "",
+                prenom2: prenom2 || "",
+                score: noteVal + ' / 20',
+                noteFinale: noteVal
+            };
+
+            fetch(GOOGLE_APPS_SCRIPT_WEBHOOK_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(payload)
+            }).then(() => {
+                if (syncMsg) {
+                    syncMsg.innerHTML = '<span style="color: #15803d; font-weight: bold;">✅ Notes enregistrées sur Google Sheets & PDF archivé sur Google Drive !</span>';
+                }
+            }).catch(err => {
+                console.warn("Synchronisation réseau différée :", err);
+                if (syncMsg) {
+                    syncMsg.innerHTML = '<span style="color: #b45309; font-weight: bold;">⚠️ Note validée en local. (Synchronisation cloud différée)</span>';
+                }
+            });
+        }
+
+        let zoomScale = 1.0;
+        let zoomPanX = 0;
+        let zoomPanY = 0;
+        let isPanning = false;
+        let panStartX = 0;
+        let panStartY = 0;
+
+        function ouvrirZoomPlan(imgSrc, titre) {
+            const modal = document.getElementById('zoom-modal');
+            const img = document.getElementById('zoom-modal-img');
+            const titleElem = document.getElementById('zoom-modal-title');
+            if (!modal || !img) return;
+
+            let finalSrc = imgSrc;
+            if (window.TD_IMAGES_DATA) {
+                const filename = imgSrc.split('/').pop().split('?')[0];
+                if (window.TD_IMAGES_DATA[filename]) {
+                    finalSrc = window.TD_IMAGES_DATA[filename];
+                }
+            }
+
+            img.src = finalSrc;
+            if (titleElem) titleElem.innerText = titre || "Plan Technique Agrandissement HD";
+            modal.classList.add('active');
+            zoomReinitialiser();
+        }
+
+        function fermerZoomPlan(e) {
+            const modal = document.getElementById('zoom-modal');
+            if (modal) modal.classList.remove('active');
+        }
+
+        function zoomModifier(delta) {
+            zoomScale = Math.max(0.5, Math.min(4.0, zoomScale + delta));
+            appliquerTransformZoom();
+        }
+
+        function zoomReinitialiser() {
+            zoomScale = 1.0;
+            zoomPanX = 0;
+            zoomPanY = 0;
+            appliquerTransformZoom();
+        }
+
+        function appliquerTransformZoom() {
+            const img = document.getElementById('zoom-modal-img');
+            if (img) img.style.transform = "translate(" + zoomPanX + "px, " + zoomPanY + "px) scale(" + zoomScale + ")";
+        }
+
+        function zoomStartPan(e) {
+            if (e.target.tagName.toLowerCase() === 'button') return;
+            isPanning = true;
+            panStartX = e.clientX - zoomPanX;
+            panStartY = e.clientY - zoomPanY;
+            e.preventDefault();
+        }
+
+        window.addEventListener('mousemove', function(e) {
+            if (!isPanning) return;
+            zoomPanX = e.clientX - panStartX;
+            zoomPanY = e.clientY - panStartY;
+            appliquerTransformZoom();
+        });
+
+        window.addEventListener('mouseup', function() {
+            isPanning = false;
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const b = document.getElementById('zoom-modal-body');
+            if (b) {
+                b.addEventListener('mousedown', zoomStartPan);
+            }
+            const modal = document.getElementById('zoom-modal');
+            if (modal) {
+                modal.addEventListener('wheel', (e) => {
+                    const delta = e.deltaY < 0 ? 0.15 : -0.15;
+                    zoomModifier(delta);
+                    e.preventDefault();
+                }, { passive: false });
+            }
+
+            if (window.TD_IMAGES_DATA) {
+                document.querySelectorAll('img').forEach(img => {
+                    const src = img.getAttribute('src');
+                    if (src) {
+                        const fname = src.split('/').pop().split('?')[0];
+                        if (window.TD_IMAGES_DATA[fname]) {
+                            img.src = window.TD_IMAGES_DATA[fname];
+                        }
+                    }
+                });
+            }
+
+            mettreAJourIdentite();
+            onUserAnswerChange(null);
+        });
+
+        function ouvrirFicheSynthese() {
+            window.open('Fiche_Synthese_Liaison_Complete.html', '_blank');
+        }
+</script>
+
+</body>
+</html>
